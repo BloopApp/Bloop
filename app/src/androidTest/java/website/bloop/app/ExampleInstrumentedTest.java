@@ -1,4 +1,4 @@
-package website.bloop.bloop;
+package website.bloop.app;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
