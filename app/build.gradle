@@ -6,7 +6,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "24.0.2"
     defaultConfig {
-        applicationId "website.bloop.bloop"
+        applicationId "website.bloop.app"
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
@@ -46,4 +46,7 @@ dependencies {
 
     // rxlocation
     compile 'com.patloew.rxlocation:rxlocation:1.0.0'
+
+    // color picker
+    compile 'com.github.QuadFlask:colorpicker:0.0.12'
 }

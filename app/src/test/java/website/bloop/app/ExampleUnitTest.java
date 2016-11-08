@@ -1,4 +1,4 @@
-package website.bloop.bloop;
+package website.bloop.app;
 
 import org.junit.Test;
 
