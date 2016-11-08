@@ -5,7 +5,7 @@ An Android app that lets you play the largest game of capture the flag.
 
 ![Proposal wireframes](Bloop-proposal.jpg)
 
-### Wirefram explanation:
+### Wireframe explanation:
 
 1. Login screen, which is only visible on the initial launch of the app. The user logins to Google Play Games (which we then use their username as their identifier).
 2. After login on first launch, a tutorial is displayed that gives an overview of the core game mechanics and how to interact with our application. This tutorial is similar to other app tutorials, in that it is a cardview that the user can swipe through.
@@ -17,4 +17,5 @@ An Android app that lets you play the largest game of capture the flag.
 
 ### Class diagram:
 
-[WIP]
+![Flag and Player Classes](flag-player.jpg)
+![Class diagram](class-diagram.png)
