@@ -49,4 +49,9 @@ dependencies {
 
     // color picker
     compile 'com.github.QuadFlask:colorpicker:0.0.12'
+
+    // Game utils
+    compile project(':BaseGameUtils')
+    compile 'com.google.android.gms:play-services-games:9.8.0'
+    compile 'com.google.android.gms:play-services-plus:9.8.0'
 }
