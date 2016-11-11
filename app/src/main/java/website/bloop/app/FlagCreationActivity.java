@@ -1,9 +1,10 @@
 package website.bloop.app;
 
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
@@ -12,10 +13,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class FlagCreationActivity extends AppCompatActivity {
-    private int flagColor = Color.WHITE;
+    private int mFlagColor = Color.WHITE;
 
-    @BindView(R.id.flag_color)
-    TextView flagColorView;
+    @BindView(R.id.flag_button)
+    ImageButton mFlagColorView;
+
+    @BindView(R.id.next_button)
+    Button mNextButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,19 +28,25 @@ public class FlagCreationActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        flagColorView.setOnClickListener(view -> this.showColorPickerDialog());
+        mFlagColorView.setOnClickListener(view -> this.showColorPickerDialog());
+
+        mNextButton.setOnClickListener(view -> this.onClickNextButton());
     }
 
     private void setFlagColor(int flagColor) {
-        this.flagColor = flagColor;
+        this.mFlagColor = flagColor;
 
-        if (flagColorView != null) {
-            flagColorView.setTextColor(this.flagColor);
+        if (mFlagColorView != null) {
+            mFlagColorView.setColorFilter(this.mFlagColor);
         }
     }
 
+    private void onClickNextButton() {
+        // do some stuff related to sending this flag color to the next thing.
+    }
+
     private void showColorPickerDialog() {
-        int currentBackgroundColor = flagColor;
+        int currentBackgroundColor = mFlagColor;
         ColorPickerDialogBuilder
                 .with(this)
                 .setTitle("Choose flag color")
