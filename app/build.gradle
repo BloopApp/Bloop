@@ -12,6 +12,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // build config
+        resValue "string", "BLOOP_GOOGLE_MAPS_API_KEY", BLOOP_GOOGLE_MAPS_API_KEY
     }
     buildTypes {
         release {
