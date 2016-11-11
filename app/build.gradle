@@ -56,6 +56,11 @@ dependencies {
     // color picker
     compile 'com.github.QuadFlask:colorpicker:0.0.12'
 
+    // aboutlibraries
+    compile('com.mikepenz:aboutlibraries:5.8.5@aar') {
+        transitive = true
+    }
+
     // other
     compile 'com.google.android.gms:play-services:9.8.0'
 }

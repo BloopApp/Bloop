@@ -1,9 +1,8 @@
 package website.bloop.app;
 
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -13,15 +12,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.patloew.rxlocation.RxLocation;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
 
 public class BloopActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = "BloopActivity";
+    private static final long LOCATION_UPDATE_MS = 5000;
+    private static final float DEFAULT_ZOOM_LEVEL = 18f;
     private RxLocation mRxLocation;
 
     private GoogleMap mMap;
@@ -43,63 +46,74 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         mRxLocation = new RxLocation(this);
 
-        initLocationWithPermission();
-
-
+        requestLocationPermissions().subscribe(granted -> {
+            if (granted) {
+                startTrackingLocation();
+            }
+        });
     }
 
-    private void initLocationWithPermission() {
-        RxPermissions.getInstance(this)
+    /**
+     * Shows an activity that describes the open source libraries used in this project
+     */
+    private void startAboutLibraries() {
+        new LibsBuilder()
+                //provide a style (optional) (LIGHT, DARK, LIGHT_DARK_TOOLBAR)
+                .withActivityStyle(Libs.ActivityStyle.LIGHT)
+                //start the activity
+                .start(this);
+    }
+
+    private Observable<Boolean> requestLocationPermissions() {
+        return RxPermissions.getInstance(this)
                 .request(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                .subscribe(granted -> {
-                    if (granted) {
-                        Log.d(TAG, "Location permission granted");
-
-                        // Request location now that we know we have permission to do so
-                        LocationRequest locationRequest = LocationRequest.create()
-                                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                                .setInterval(5000);
-
-                        //noinspection MissingPermission
-                        mRxLocation.location().updates(locationRequest)
-                                .subscribe(location -> {
-                                    if (mOverlayTextView != null) {
-                                        mOverlayTextView.setText(
-                                                String.format("%s %s", location.getLatitude(), location.getLongitude())
-                                        );
-                                    }
-
-                                    if (mMap != null) {
-                                        LatLng myLocation = new LatLng(
-                                                location.getLatitude(),
-                                                location.getLongitude()
-                                        );
-
-                                        mMap.animateCamera(CameraUpdateFactory.newLatLng(myLocation));
-                                    }
-                                });
-                    } else {
-                        Log.e(TAG, "Location permission not granted!");
-                    }
+                .doOnEach(granted -> {
+                    Log.i(TAG, String.format("Location permission granted: %s", granted));
                 });
+    }
+
+    private void startTrackingLocation() {
+        Log.d(TAG, "Location tracking started");
+
+        // Request location now that we know we have permission to do so
+        LocationRequest locationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(LOCATION_UPDATE_MS);
+
+        // this should never be called if the permission hasn't been granted.
+        //noinspection MissingPermission
+        mRxLocation.location().updates(locationRequest)
+                //TODO: we might want to clean this data before passing it on
+                .doOnEach(location -> updateMapCenter(location.getValue()))
+                .doOnEach(location -> updateOverlayTextView(location.getValue()))
+                .subscribe();
+    }
+
+    private void updateOverlayTextView(Location location) {
+        if (mOverlayTextView != null) {
+            mOverlayTextView.setText(
+                    String.format("%s %s", location.getLatitude(), location.getLongitude())
+            );
+        }
+    }
+
+    private void updateMapCenter(Location location) {
+        if (mMap != null) {
+            LatLng myLocation = new LatLng(
+                    location.getLatitude(),
+                    location.getLongitude()
+            );
+
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, DEFAULT_ZOOM_LEVEL));
+        }
     }
 
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }
