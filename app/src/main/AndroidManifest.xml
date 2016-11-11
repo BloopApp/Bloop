@@ -25,7 +25,7 @@
 
         <activity
             android:name=".BloopActivity"
-            android:label="@string/title_activity_bloop">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
