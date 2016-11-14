@@ -1,5 +1,6 @@
 package website.bloop.app;
 
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -12,6 +13,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.patloew.rxlocation.RxLocation;
@@ -115,5 +117,20 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        try {
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json)
+            );
+
+            if (!success) {
+                Log.e(TAG, "Set map style failed!");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style file.", e);
+        }
+
+        // we don't want this to be fixed.
+        mMap.getUiSettings().setAllGesturesEnabled(false);
     }
 }
