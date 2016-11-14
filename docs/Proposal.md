@@ -35,9 +35,9 @@ Multiplayer deathmatch capture the flag with a persistent world. Each individual
 
 ## For each team member: three project learning goals. Explain what you hope to get out of the project and how your project will help accomplish that goal
 ### Danny
-- I want to publish this app on the Google Play Store and add tracking of some sort
-- Push notifications, I know this requires some sort of service on the backend, and I’m curious how to do it
-- I want to make the GPS data tracking screen
+- I want to publish this app on the Google Play Store.
+- I want to learn how to use RxJava and use it within the app.
+- I want to make this app look good (I want to work more with design parts of Android: animation, icons, material design).
 
 
 ### Philip
