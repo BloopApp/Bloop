@@ -17,3 +17,7 @@
 #}
 
 -dontwarn java.lang.invoke.*
+-keep class .R
+-keep class **.R$* {
+    <fields>;
+}

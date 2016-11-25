@@ -12,6 +12,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // build config
+        resValue "string", "BLOOP_GOOGLE_MAPS_API_KEY", BLOOP_GOOGLE_MAPS_API_KEY
     }
     buildTypes {
         release {
@@ -47,6 +50,9 @@ dependencies {
     // rxlocation
     compile 'com.patloew.rxlocation:rxlocation:1.0.0'
 
+    // rxpermissions
+    compile 'com.tbruyelle.rxpermissions2:rxpermissions:0.8.1@aar'
+
     // color picker
     compile 'com.github.QuadFlask:colorpicker:0.0.12'
 
@@ -54,4 +60,11 @@ dependencies {
     compile project(':BaseGameUtils')
     compile 'com.google.android.gms:play-services-games:9.8.0'
     compile 'com.google.android.gms:play-services-plus:9.8.0'
+    // aboutlibraries
+    compile('com.mikepenz:aboutlibraries:5.8.5@aar') {
+        transitive = true
+    }
+
+    // other
+    compile 'com.google.android.gms:play-services:9.8.0'
 }
