@@ -27,13 +27,14 @@ public class PlayLoginActivity extends AppCompatActivity
     private static int RC_SIGN_IN = 9001;
 
     private boolean mResolvingConnectionFailure = false;
-    private boolean mAutoStartSignInFlow = true;
+    private boolean mAutoStartSignInFlow = false;
     private boolean mSignInClicked = false;
 
     private GoogleApiClient mGoogleApiClient;
 
-    // TODO testing, remove
-    TextView testView;
+    // TODO use butterknife
+    TextView loginText;
+    Button loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +46,12 @@ public class PlayLoginActivity extends AppCompatActivity
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
-                // add other APIs and scopes here as needed
                 .build();
 
-        Button testButton = (Button) findViewById(R.id.signInButton);
-        testButton.setOnClickListener(view -> signInClicked());
+        loginButton = (Button) findViewById(R.id.signInButton);
+        loginButton.setOnClickListener(view -> signInClicked());
 
-        testView = (TextView) findViewById(R.id.signInName);
+        loginText = (TextView) findViewById(R.id.signInName);
     }
 
     @Override
@@ -66,8 +66,7 @@ public class PlayLoginActivity extends AppCompatActivity
         } else {
             displayName = p.getDisplayName();
         }
-        testView.setText(displayName);
-
+        loginText.setText(displayName);
     }
 
     @Override
@@ -123,7 +122,6 @@ public class PlayLoginActivity extends AppCompatActivity
     }
 
     // Call when the sign-in button is clicked
-    // TODO rename, because both signs in and out
     public void signInClicked() {
         if (!mSignInClicked) {
             mSignInClicked = true;
@@ -131,6 +129,7 @@ public class PlayLoginActivity extends AppCompatActivity
         } else {
             mSignInClicked = false;
             Games.signOut(mGoogleApiClient);
+            loginText.setText(R.string.signin_out);
         }
     }
 
