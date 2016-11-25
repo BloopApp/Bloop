@@ -15,6 +15,9 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.Player;
 import com.google.example.games.basegameutils.BaseGameUtils;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Login authentication through Google Play Games
  * Reference: https://developers.google.com/games/services/training/signin
@@ -32,14 +35,15 @@ public class PlayLoginActivity extends AppCompatActivity
 
     private GoogleApiClient mGoogleApiClient;
 
-    // TODO use butterknife
-    TextView loginText;
-    Button loginButton;
+    @BindView(R.id.signInName) TextView loginText;
+    @BindView(R.id.signInButton) Button loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_login);
+
+        ButterKnife.bind(this);
 
         // Create the Google Api Client with access to the Play Games services
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -57,7 +61,6 @@ public class PlayLoginActivity extends AppCompatActivity
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         // hide sign-in button
-        Log.d(TAG, "onConnected(): connected to Google APIs");
         Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
         String displayName;
         if (p == null) {
@@ -103,10 +106,9 @@ public class PlayLoginActivity extends AppCompatActivity
         // Put code here to display the sign-in button
     }
 
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent intent) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == RC_SIGN_IN) {
-            mSignInClicked = false;
+            mSignInClicked = true;
             mResolvingConnectionFailure = false;
             if (resultCode == RESULT_OK) {
                 mGoogleApiClient.connect();
