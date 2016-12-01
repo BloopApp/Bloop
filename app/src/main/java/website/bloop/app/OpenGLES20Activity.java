@@ -6,11 +6,9 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
 /**
- * Created by philip on 11/28/16.
+ *
  */
-
 public class OpenGLES20Activity extends Activity {
-
     private GLSurfaceView mGLView;
 
     @Override
@@ -24,7 +22,6 @@ public class OpenGLES20Activity extends Activity {
     }
 
     class MyGLSurfaceView extends GLSurfaceView {
-
         private final MyGLRenderer mRenderer;
 
         public MyGLSurfaceView(Context context){
