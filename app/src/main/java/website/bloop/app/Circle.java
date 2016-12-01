@@ -66,18 +66,14 @@ public class Circle {
         // get handle to vertex shader's vPosition member
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
 
-        // Enable a handle to the triangle vertices
+        // Enable a handle to the circle vertices
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
-        // Prepare the triangle coordinate data
-        GLES20.glVertexAttribPointer(mPositionHandle, 3,
-                GLES20.GL_FLOAT, false,12
-                , vertexBuffer);
+        // Prepare the circle coordinate data
+        GLES20.glVertexAttribPointer(mPositionHandle, 3, GLES20.GL_FLOAT, false, 12, vertexBuffer);
 
         // get handle to fragment shader's vColor member
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-
-
 
         // Set color for drawing the triangle
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
@@ -87,10 +83,8 @@ public class Circle {
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
 
-
-
-        // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 364);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 364);
+//        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 364);
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
