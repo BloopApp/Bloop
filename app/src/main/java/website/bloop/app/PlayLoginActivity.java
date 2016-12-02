@@ -1,9 +1,6 @@
 package website.bloop.app;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.PixelFormat;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,16 +53,12 @@ public class PlayLoginActivity extends AppCompatActivity
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
 
-        loginButton = (Button) findViewById(R.id.signInButton);
         loginButton.setOnClickListener(view -> signInClicked());
-
-        loginText = (TextView) findViewById(R.id.signInName);
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "onConnected(): connected to Google APIs");
-        // hide sign-in button
         Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
         String displayName;
         if (p == null) {
@@ -76,7 +69,9 @@ public class PlayLoginActivity extends AppCompatActivity
         }
         loginText.setText(displayName);
         Intent newIntent = new Intent(getBaseContext(), BloopActivity.class);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(newIntent);
+        finish();
     }
 
     @Override
