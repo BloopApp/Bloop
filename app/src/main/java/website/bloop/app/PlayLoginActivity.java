@@ -58,7 +58,6 @@ public class PlayLoginActivity extends AppCompatActivity
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.d(TAG, "onConnected(): connected to Google APIs");
         Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
         String displayName;
         if (p == null) {
@@ -76,15 +75,12 @@ public class PlayLoginActivity extends AppCompatActivity
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.d(TAG, "onConnectionSuspended()");
         // Attempt to reconnect
         mGoogleApiClient.connect();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed()");
-
         if (mResolvingConnectionFailure) {
             // already resolving
             return;
@@ -93,8 +89,6 @@ public class PlayLoginActivity extends AppCompatActivity
         // if the sign-in button was clicked or if auto sign-in is enabled,
         // launch the sign-in flow
         if (mSignInClicked || mAutoStartSignInFlow) {
-            Log.d(TAG, mSignInClicked + " " + mAutoStartSignInFlow);
-
             mAutoStartSignInFlow = false;
             mSignInClicked = false;
             mResolvingConnectionFailure = true;
@@ -114,8 +108,6 @@ public class PlayLoginActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.d(TAG, "onActivityResult()");
-
         if (requestCode == RC_SIGN_IN) {
             mSignInClicked = true;
             mResolvingConnectionFailure = false;
@@ -134,8 +126,6 @@ public class PlayLoginActivity extends AppCompatActivity
 
     // Call when the sign-in button is clicked
     public void signInClicked() {
-        Log.d(TAG, "signInClicked()");
-
         if (!mSignInClicked) {
             mSignInClicked = true;
             mGoogleApiClient.connect();

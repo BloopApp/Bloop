@@ -83,7 +83,6 @@ public class Circle {
         // Apply the projection and view transformation
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
 
-//        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 364);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 364);
 
         // Disable vertex array
