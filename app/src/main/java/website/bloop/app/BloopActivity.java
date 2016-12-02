@@ -22,7 +22,7 @@ import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.patloew.rxlocation.RxLocation;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -49,8 +49,8 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bloop);
 
-        // we're going to be removing the first element a lot, LinkedList will be good
-        mBootprintLocations = new LinkedList<>();
+        //TOmaybeDO: better data structure for this
+        mBootprintLocations = new ArrayList<>(MAX_BOOTPRINTS);
 
         mLeftBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_left);
         mRightBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_right);
