@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,4 +11,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="website.bloop.app.BloopActivity" />
+
+    <Button
+        android:text="Place Flag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/button_place_flag"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:textSize="24sp"
+        android:padding="20dp"
+        android:layout_margin="10dp"
+        android:alpha="0.9" />
 </RelativeLayout>
