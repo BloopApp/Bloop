@@ -33,6 +33,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private static final float DEFAULT_ZOOM_LEVEL = 18f;
     private static final double BOOTPRINT_MIN_MERCATOR_DISTANCE = 0.0000895f;
     private static final float BOOTPRINT_SIZE_METERS = 10;
+    private static final int MAX_BOOTPRINTS = 150;
     private RxLocation mRxLocation;
 
     private GoogleMap mMap;
@@ -106,7 +107,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private void updateMyLocation(Location location) {
-        if (mBootprintLocations == null) {
+        if (mBootprintLocations == null || location == null) {
             return;
         }
 
@@ -163,11 +164,30 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
             );
 
             mBootprintLocations.add(overlay);
+
+            removeAndUpdateBootprints();
+        }
+    }
+
+    private void removeAndUpdateBootprints() {
+        if (mBootprintLocations.size() >= MAX_BOOTPRINTS) {
+            final GroundOverlay removedOverlay = mBootprintLocations.remove(0);
+            removedOverlay.remove();
+        }
+
+        for (int i = 0; i < mBootprintLocations.size(); i++) {
+            GroundOverlay bootprint = mBootprintLocations.get(i);
+
+            int footprintsLeft = MAX_BOOTPRINTS - mBootprintLocations.size();
+
+            float transparency = 1f - ((i + footprintsLeft) / (float) MAX_BOOTPRINTS);
+
+            bootprint.setTransparency((2f * transparency / 3f) + .33f);
         }
     }
 
     private void updateMapCenter(Location location) {
-        if (mMap != null) {
+        if (mMap != null && location != null) {
             LatLng myLocation = new LatLng(
                     location.getLatitude(),
                     location.getLongitude()
