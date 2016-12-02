@@ -15,9 +15,6 @@
             android:value="@string/app_id" />
         <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
-
-        <activity android:name=".FlagCreationActivity">
-        </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
 
@@ -30,31 +27,15 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/BLOOP_GOOGLE_MAPS_API_KEY" />
 
-        <!--<activity-->
-            <!--android:name=".BloopActivity"-->
-            <!--android:label="@string/app_name">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
-
-        <!--<activity android:name=".PlayLoginActivity">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
-
-        <activity android:name=".OpenGLES20Activity">
+        <activity android:name=".PlayLoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".BloopActivity" />
+        <activity android:name=".FlagCreationActivity" />
     </application>
 
 </manifest>

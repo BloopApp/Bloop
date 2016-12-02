@@ -1,6 +1,9 @@
 package website.bloop.app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.PixelFormat;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,6 +40,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
     @BindView(R.id.signInName) TextView loginText;
     @BindView(R.id.signInButton) Button loginButton;
+    @BindView(R.id.circleView) CircleSurfaceView mglView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        Log.d(TAG, "onConnected(): connected to Google APIs");
         // hide sign-in button
         Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
         String displayName;
@@ -70,16 +75,21 @@ public class PlayLoginActivity extends AppCompatActivity
             displayName = p.getDisplayName();
         }
         loginText.setText(displayName);
+        Intent newIntent = new Intent(getBaseContext(), BloopActivity.class);
+        startActivity(newIntent);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
+        Log.d(TAG, "onConnectionSuspended()");
         // Attempt to reconnect
         mGoogleApiClient.connect();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed()");
+
         if (mResolvingConnectionFailure) {
             // already resolving
             return;
@@ -88,6 +98,8 @@ public class PlayLoginActivity extends AppCompatActivity
         // if the sign-in button was clicked or if auto sign-in is enabled,
         // launch the sign-in flow
         if (mSignInClicked || mAutoStartSignInFlow) {
+            Log.d(TAG, mSignInClicked + " " + mAutoStartSignInFlow);
+
             mAutoStartSignInFlow = false;
             mSignInClicked = false;
             mResolvingConnectionFailure = true;
@@ -107,6 +119,8 @@ public class PlayLoginActivity extends AppCompatActivity
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.d(TAG, "onActivityResult()");
+
         if (requestCode == RC_SIGN_IN) {
             mSignInClicked = true;
             mResolvingConnectionFailure = false;
@@ -125,6 +139,8 @@ public class PlayLoginActivity extends AppCompatActivity
 
     // Call when the sign-in button is clicked
     public void signInClicked() {
+        Log.d(TAG, "signInClicked()");
+
         if (!mSignInClicked) {
             mSignInClicked = true;
             mGoogleApiClient.connect();

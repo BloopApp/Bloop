@@ -31,7 +31,7 @@ public class CircleRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 unused) {
         float[] scratch = new float[16];
         // Redraw background color
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glClearColor(0.9804f, 0.9804f, 0.9804f, 0.01f);
 
         // Set the camera position (View matrix)
         Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
@@ -46,7 +46,7 @@ public class CircleRenderer implements GLSurfaceView.Renderer {
 
         // Create a scale transformation for the circle
         long time = SystemClock.uptimeMillis() % 4000L;
-        float scale = 0.0001f * ((int) time);
+        float scale = 0.001f * ((int) time);
         Matrix.scaleM(mMVPMatrix, 0, scale, scale, 0f);
 
         // Combine the rotation matrix with the projection and camera view
