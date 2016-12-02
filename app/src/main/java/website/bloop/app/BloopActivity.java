@@ -5,6 +5,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.widget.Button;
 
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,6 +26,8 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 
 public class BloopActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -44,10 +47,17 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private BitmapDescriptor mRightBootprint;
     private Location mCurrentLocation;
 
+    @BindView(R.id.button_place_flag)
+    Button mButtonPlaceFlag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bloop);
+
+        ButterKnife.bind(this);
+
+        mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
 
         //TOmaybeDO: better data structure for this
         mBootprintLocations = new ArrayList<>(MAX_BOOTPRINTS);
@@ -194,6 +204,12 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
             );
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, DEFAULT_ZOOM_LEVEL));
+        }
+    }
+
+    private void placeFlag() {
+        if (mCurrentLocation != null) {
+
         }
     }
 
