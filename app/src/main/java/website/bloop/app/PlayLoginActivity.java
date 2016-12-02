@@ -37,6 +37,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
     @BindView(R.id.signInName) TextView loginText;
     @BindView(R.id.signInButton) Button loginButton;
+    @BindView(R.id.circleView) CircleSurfaceView mglView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,15 +53,11 @@ public class PlayLoginActivity extends AppCompatActivity
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
 
-        loginButton = (Button) findViewById(R.id.signInButton);
         loginButton.setOnClickListener(view -> signInClicked());
-
-        loginText = (TextView) findViewById(R.id.signInName);
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        // hide sign-in button
         Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
         String displayName;
         if (p == null) {
@@ -70,6 +67,10 @@ public class PlayLoginActivity extends AppCompatActivity
             displayName = p.getDisplayName();
         }
         loginText.setText(displayName);
+        Intent newIntent = new Intent(getBaseContext(), BloopActivity.class);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(newIntent);
+        finish();
     }
 
     @Override
