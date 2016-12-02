@@ -25,13 +25,14 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.ButterKnife;
 import io.reactivex.Observable;
 
 public class BloopActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = "BloopActivity";
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final float DEFAULT_ZOOM_LEVEL = 18f;
+    private static final double BOOTPRINT_MIN_MERCATOR_DISTANCE = 0.0000895f;
+    private static final float BOOTPRINT_SIZE_METERS = 10;
     private RxLocation mRxLocation;
 
     private GoogleMap mMap;
@@ -52,8 +53,6 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         mLeftBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_left);
         mRightBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_right);
-
-        ButterKnife.bind(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -118,8 +117,8 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         if (mBootprintLocations.size() == 0) {
             // first time, place left and right prints
-            placeBootprint(latLng, 0);
-            placeBootprint(latLng, 0);
+            placeBootprint(latLng, 0f);
+            placeBootprint(latLng, 0f);
 
             return;
         }
@@ -130,20 +129,20 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
                     mBootprintLocations.size() - 1
             ).getPosition();
 
-            double deltaLat = lastLatLng.latitude - latLng.latitude;
-            double deltaLong = lastLatLng.longitude - latLng.longitude;
+            double deltaLat = latLng.latitude - lastLatLng.latitude;
+            double deltaLong = latLng.longitude - lastLatLng.longitude;
 
             double mercatorDistance = Math.sqrt(
                     Math.pow(deltaLat, 2) + Math.pow(deltaLong, 2)
             );
 
-            if (mercatorDistance > 0.0000895f) {
+            if (mercatorDistance > BOOTPRINT_MIN_MERCATOR_DISTANCE) {
                 placeBootprint(latLng, (float) Math.atan2(deltaLong, deltaLat));
             }
         }
     }
 
-    private void placeBootprint(LatLng latLng, float bearing) {
+    private void placeBootprint(LatLng latLng, float direction) {
         if (mMap != null) {
             final BitmapDescriptor bootprint;
             // pick left/right print
@@ -157,9 +156,9 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
             final GroundOverlay overlay = mMap.addGroundOverlay(
                     new GroundOverlayOptions().position(
                             latLng,
-                            10
+                            BOOTPRINT_SIZE_METERS
                     ).bearing(
-                            (float) (bearing / Math.PI * 180d) + 180f
+                            (float) (direction / Math.PI * 180d)
                     ).image(bootprint)
             );
 
