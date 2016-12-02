@@ -11,24 +11,20 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  *
  */
-public class MyGLRenderer implements GLSurfaceView.Renderer {
+public class CircleRenderer implements GLSurfaceView.Renderer {
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
-
-    // used to describe motion
-    private float[] mRotationMatrix = new float[16];
+    private final float[] mRotationMatrix = new float[16];
 
     // object we are going to draw
-    private Triangle mTriangle;
     private Circle mCircle;
 
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        // initialize a triangle
-        mTriangle = new Triangle();
+        // initialize a circle
         mCircle = new Circle();
     }
 
@@ -46,9 +42,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Create a rotation transformation for the triangle
+        Matrix.setRotateM(mRotationMatrix, 0, 0, 0, 0, -1.0f);
+
+        // Create a scale transformation for the circle
         long time = SystemClock.uptimeMillis() % 4000L;
-        float angle = 0.090f * ((int) time);
-        Matrix.setRotateM(mRotationMatrix, 0, angle, 0, 0, -1.0f);
+        float scale = 0.0001f * ((int) time);
+        Matrix.scaleM(mMVPMatrix, 0, scale, scale, 0f);
 
         // Combine the rotation matrix with the projection and camera view
         Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mRotationMatrix, 0);
