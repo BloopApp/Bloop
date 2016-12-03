@@ -36,7 +36,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private static final float DEFAULT_ZOOM_LEVEL = 18f;
     private static final double BOOTPRINT_MIN_MERCATOR_DISTANCE = 0.0000895f;
     private static final float BOOTPRINT_SIZE_METERS = 10;
-    private static final int MAX_BOOTPRINTS = 150;
+    private static final int MAX_BOOTPRINTS = 50;
     private RxLocation mRxLocation;
 
     private GoogleMap mMap;
@@ -50,6 +50,9 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     @BindView(R.id.button_place_flag)
     Button mButtonPlaceFlag;
 
+    @BindView(R.id.sonar_view)
+    SonarView sonarView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +60,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         ButterKnife.bind(this);
 
-        mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
+        mButtonPlaceFlag.setOnClickListener(view -> sonarView.bloop());
 
         //TOmaybeDO: better data structure for this
         mBootprintLocations = new ArrayList<>(MAX_BOOTPRINTS);
