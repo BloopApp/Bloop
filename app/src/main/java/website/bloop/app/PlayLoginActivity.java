@@ -1,6 +1,8 @@
 package website.bloop.app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -68,6 +70,14 @@ public class PlayLoginActivity extends AppCompatActivity
             displayName = p.getDisplayName();
         }
         loginText.setText(displayName);
+
+        // set the pref to skip this activity now
+        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("activity_executed", true);
+        ed.apply();
+
+        // start the main game now
         Intent newIntent = new Intent(getBaseContext(), BloopActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(newIntent);
