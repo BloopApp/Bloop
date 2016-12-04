@@ -8,7 +8,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 /**
- * TODO: Add a class header comment!
+ * Interface for sending requests to the backend.
  */
 
 public interface BloopAPIService {

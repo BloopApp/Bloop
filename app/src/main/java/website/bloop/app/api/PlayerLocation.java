@@ -3,7 +3,7 @@ package website.bloop.app.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * POJO for flags
+ * POJO for sending player location to the server.
  */
 
 public class PlayerLocation {

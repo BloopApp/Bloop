@@ -3,7 +3,7 @@ package website.bloop.app.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * TODO: Add a class header comment!
+ * POJO for receiving distance updates and capturing flags.
  */
 
 public class NearbyFlag {
