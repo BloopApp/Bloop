@@ -24,7 +24,7 @@ public class TutorialActivity extends AppIntro {
         // launch once logic
         SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
         if (pref.getBoolean("activity_executed", false)) {
-            Intent intent = new Intent(this, FlagCreationActivity.class);
+            Intent intent = new Intent(this, BloopActivity.class);
             startActivity(intent);
             finish();
         }

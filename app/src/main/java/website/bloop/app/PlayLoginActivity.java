@@ -78,7 +78,7 @@ public class PlayLoginActivity extends AppCompatActivity
         ed.apply();
 
         // start the main game now
-        Intent newIntent = new Intent(getBaseContext(), FlagCreationActivity.class);
+        Intent newIntent = new Intent(getBaseContext(), BloopActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(newIntent);
         finish();
