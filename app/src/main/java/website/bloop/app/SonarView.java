@@ -8,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -40,7 +39,6 @@ public class SonarView extends RelativeLayout {
         super(context, attrs, defStyleAttr);
         initialize(context, attrs);
     }
-
 
     private void initialize(final Context context, final AttributeSet attrs) {
         if (isInEditMode()) {
@@ -98,6 +96,7 @@ public class SonarView extends RelativeLayout {
 
             }
         });
+
         sonarBloopView.setAnimation(animation);
     }
 

@@ -22,7 +22,6 @@ import butterknife.ButterKnife;
  * Login authentication through Google Play Games
  * Reference: https://developers.google.com/games/services/training/signin
  */
-
 public class PlayLoginActivity extends AppCompatActivity
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -103,8 +102,6 @@ public class PlayLoginActivity extends AppCompatActivity
                 mResolvingConnectionFailure = false;
             }
         }
-
-        // Put code here to display the sign-in button
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -137,10 +134,10 @@ public class PlayLoginActivity extends AppCompatActivity
         }
     }
 
+    // removed mGoogle connect here because bug where locking/unlocking logged in for some reason
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
     }
 
     @Override
