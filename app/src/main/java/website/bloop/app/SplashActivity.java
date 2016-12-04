@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 /**
  * Splash screen, which is useful because we want a login to happen on the first launch as well as
  * a tutorial. Once those are completed, we do not want to use those screens anymore.
- * First start reference: https://github.com/PaoloRotolo/AppIntro/wiki/How-to-Use#show-the-intro-once
+ * Splash reference: https://www.bignerdranch.com/blog/splash-screens-the-right-way/
  */
 
 public class SplashActivity extends AppCompatActivity {
