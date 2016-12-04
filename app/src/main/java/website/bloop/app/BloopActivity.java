@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Button;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,6 +30,16 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
+import website.bloop.app.api.APIPath;
+import website.bloop.app.api.BloopAPIService;
+import website.bloop.app.api.NearbyFlag;
+import website.bloop.app.api.PlayerLocation;
 
 public class BloopActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = "BloopActivity";
@@ -45,6 +56,10 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private List<GroundOverlay> mBootprintLocations;
     private Location mCurrentLocation;
     private RxLocation mRxLocation;
+
+    private BloopAPIService mService;
+    private long mPlayerId = 3; //TODO: make this not hard-coded
+    private double mBloopFrequency;
 
     @BindView(R.id.button_place_flag) Button mButtonPlaceFlag;
 
@@ -77,6 +92,12 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
                 startTrackingLocation();
             }
         });
+
+        mService = new Retrofit.Builder()
+                .baseUrl(APIPath.BASE_PATH)
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build()
+                .create(BloopAPIService.class);
     }
 
     /**
@@ -113,6 +134,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
                 .doOnEach(location -> mCurrentLocation = location.getValue())
                 .doOnEach(location -> updateMapCenter(location.getValue()))
                 .doOnEach(location -> updateMyLocation(location.getValue()))
+                .doOnEach(location -> updateBloopFrequency())
                 .subscribe();
     }
 
@@ -208,8 +230,41 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void placeFlag() {
         if (mCurrentLocation != null) {
-            // TODO organize bloop and placing flag better
-            sonarView.bloop();
+            Call<ResponseBody> call = mService.placeFlag(new PlayerLocation(mPlayerId, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    //TODO: Place flag onscreen
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    private void updateBloopFrequency() {
+        if (mCurrentLocation != null) {
+            Call<NearbyFlag> call = mService.getNearestFlag();
+            call.enqueue(new Callback<NearbyFlag>() {
+                @Override
+                public void onResponse(Call<NearbyFlag> call, Response<NearbyFlag> response) {
+                    if (response.isSuccessful()) {
+                        mBloopFrequency = response.body().getBloopFrequency();
+                        String playerName = response.body().getPlayerName();
+                        if (playerName != null) {
+                            //TODO: alert the user that they can capture this flag
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<NearbyFlag> call, Throwable t) {
+
+                }
+            });
         }
     }
 
