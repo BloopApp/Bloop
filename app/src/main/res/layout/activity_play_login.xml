@@ -7,11 +7,13 @@
     android:layout_height="match_parent"
     tools:context="website.bloop.app.PlayLoginActivity">
 
-    <website.bloop.app.CircleSurfaceView
-        android:id="@+id/circleView"
+    <view
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:windowIsTranslucent="true" />
+        class="website.bloop.app.SonarView"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:id="@+id/sonarView" />
 
     <TextView
         android:layout_width="wrap_content"
