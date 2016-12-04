@@ -23,14 +23,10 @@ public class TutorialActivity extends AppIntro {
 
         // launch once logic
         SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
-        if(pref.getBoolean("activity_executed", false)){
-            Intent intent = new Intent(this, BloopActivity.class);
+        if (pref.getBoolean("activity_executed", false)) {
+            Intent intent = new Intent(this, FlagCreationActivity.class);
             startActivity(intent);
             finish();
-        } else {
-            SharedPreferences.Editor ed = pref.edit();
-            ed.putBoolean("activity_executed", true);
-            ed.apply();
         }
 
         // first content: change flag
