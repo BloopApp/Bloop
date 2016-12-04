@@ -66,6 +66,9 @@ dependencies {
         transitive = true
     }
 
+    // tutorial screen library
+    compile 'com.github.paolorotolo:appintro:4.1.0'
+
     // other
     compile 'com.google.android.gms:play-services:9.8.0'
 }
