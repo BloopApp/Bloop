@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 /**
  * Login authentication through Google Play Games
  * Reference: https://developers.google.com/games/services/training/signin
+ * First start reference: https://github.com/PaoloRotolo/AppIntro/wiki/How-to-Use#show-the-intro-once
  */
 
 public class PlayLoginActivity extends AppCompatActivity
@@ -46,6 +47,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
+        // TODO use singleton/application to save mClient object
         // Create the Google Api Client with access to the Play Games services
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
