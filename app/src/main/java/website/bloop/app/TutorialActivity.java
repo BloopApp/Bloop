@@ -1,6 +1,8 @@
 package website.bloop.app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,25 +15,41 @@ import com.github.paolorotolo.appintro.AppIntroFragment;
 /**
  * Activity for displaying a tutorial on first run after login to Play Games.
  * Library from: https://github.com/PaoloRotolo/AppIntro
+ * First launch logic: http://stackoverflow.com/questions/16419627/making-an-activity-appear-only-once-when-the-app-is-started
  */
 public class TutorialActivity extends AppIntro {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // launch once logic
+        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        if(pref.getBoolean("activity_executed", false)){
+            Intent intent = new Intent(this, BloopActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            SharedPreferences.Editor ed = pref.edit();
+            ed.putBoolean("activity_executed", true);
+            ed.apply();
+        }
+
         // first content: change flag
         addSlide(AppIntroFragment.newInstance("Create your flag",
-                "some more interesting words should go here", R.drawable.splash_icon,
+                "To get started, customize your flag to your liking. Remember, others will see this!",
+                R.drawable.splash_icon,
                 ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
 
         // second content: drop flag
         addSlide(AppIntroFragment.newInstance("Drop your flag",
-                "some more interesting words should go here", R.drawable.splash_icon,
+                "Jump into playing by dropping your flag. Finding a secluded spot is key!",
+                R.drawable.splash_icon,
                 ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
 
         // third content: capture flag
         addSlide(AppIntroFragment.newInstance("Find and capture flags",
-                "some more interesting words should go here", R.drawable.splash_icon,
+                "Now go on the offensive! Follow the Bloops to find other players' flags. Happy hunting!",
+                R.drawable.splash_icon,
                 ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
     }
 
