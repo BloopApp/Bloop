@@ -11,13 +11,12 @@ import com.github.paolorotolo.appintro.AppIntroFragment;
 
 /**
  * Activity for displaying a tutorial on first run after login to Play Games.
+ * Library from: https://github.com/PaoloRotolo/AppIntro
  */
 public class TutorialActivity extends AppIntro {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Note here that we DO NOT use setContentView();
 
         // Add your slide fragments here.
         // AppIntro will automatically generate the dots indicator and buttons.
