@@ -37,7 +37,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
     @BindView(R.id.signInName) TextView loginText;
     @BindView(R.id.signInButton) Button loginButton;
-    @BindView(R.id.circleView) CircleSurfaceView mglView;
+    @BindView(R.id.sonarView) SonarView bloopView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +126,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
     // Call when the sign-in button is clicked
     public void signInClicked() {
+        bloopView.bloop();
         if (!mSignInClicked) {
             mSignInClicked = true;
             mGoogleApiClient.connect();
