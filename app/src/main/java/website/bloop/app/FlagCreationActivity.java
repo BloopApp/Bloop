@@ -1,5 +1,6 @@
 package website.bloop.app;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,11 +16,9 @@ import butterknife.ButterKnife;
 public class FlagCreationActivity extends AppCompatActivity {
     private int mFlagColor = Color.WHITE;
 
-    @BindView(R.id.flag_button)
-    ImageButton mFlagColorView;
+    @BindView(R.id.flag_button) ImageButton mFlagColorView;
 
-    @BindView(R.id.next_button)
-    Button mNextButton;
+    @BindView(R.id.next_button) Button mNextButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +41,12 @@ public class FlagCreationActivity extends AppCompatActivity {
     }
 
     private void onClickNextButton() {
-        // do some stuff related to sending this flag color to the next thing.
+        // TODO for now, passing intent to bloop activity
+        // TODO actually send data and logic for different flag stuff
+        Intent newIntent = new Intent(getBaseContext(), BloopActivity.class);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(newIntent);
+        finish();
     }
 
     private void showColorPickerDialog() {

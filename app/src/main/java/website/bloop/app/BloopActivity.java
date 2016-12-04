@@ -47,23 +47,23 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private static final float DEFAULT_ZOOM_LEVEL = 18f;
     private static final double BOOTPRINT_MIN_MERCATOR_DISTANCE = 0.0000895f;
     private static final float BOOTPRINT_SIZE_METERS = 10;
-    private static final int MAX_BOOTPRINTS = 150;
-    private RxLocation mRxLocation;
+    private static final int MAX_BOOTPRINTS = 50;
 
-    private GoogleMap mMap;
-
-    private List<GroundOverlay> mBootprintLocations;
-    private int mTotalSteps;
     private BitmapDescriptor mLeftBootprint;
     private BitmapDescriptor mRightBootprint;
+    private GoogleMap mMap;
+    private int mTotalSteps;
+    private List<GroundOverlay> mBootprintLocations;
     private Location mCurrentLocation;
+    private RxLocation mRxLocation;
 
     private BloopAPIService mService;
     private long mPlayerId = 3; //TODO: make this not hard-coded
     private double mBloopFrequency;
 
-    @BindView(R.id.button_place_flag)
-    Button mButtonPlaceFlag;
+    @BindView(R.id.button_place_flag) Button mButtonPlaceFlag;
+
+    @BindView(R.id.sonar_view) SonarView sonarView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +74,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
 
-        //TOmaybeDO: better data structure for this
+        //TODO better data structure for this
         mBootprintLocations = new ArrayList<>(MAX_BOOTPRINTS);
 
         mLeftBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_left);
@@ -196,7 +196,6 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
             );
 
             mBootprintLocations.add(overlay);
-
             removeAndUpdateBootprints();
         }
     }

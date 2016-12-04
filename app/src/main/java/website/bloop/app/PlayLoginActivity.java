@@ -1,6 +1,8 @@
 package website.bloop.app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,8 +23,8 @@ import butterknife.ButterKnife;
 /**
  * Login authentication through Google Play Games
  * Reference: https://developers.google.com/games/services/training/signin
+ * First start reference: https://github.com/PaoloRotolo/AppIntro/wiki/How-to-Use#show-the-intro-once
  */
-
 public class PlayLoginActivity extends AppCompatActivity
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -37,7 +39,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
     @BindView(R.id.signInName) TextView loginText;
     @BindView(R.id.signInButton) Button loginButton;
-    @BindView(R.id.circleView) CircleSurfaceView mglView;
+    @BindView(R.id.sonarView) SonarView bloopView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
+        // TODO use singleton/application to save mClient object
         // Create the Google Api Client with access to the Play Games services
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -67,6 +70,14 @@ public class PlayLoginActivity extends AppCompatActivity
             displayName = p.getDisplayName();
         }
         loginText.setText(displayName);
+
+        // set the pref to skip this activity now
+        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("activity_executed", true);
+        ed.apply();
+
+        // start the main game now
         Intent newIntent = new Intent(getBaseContext(), BloopActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(newIntent);
@@ -103,8 +114,6 @@ public class PlayLoginActivity extends AppCompatActivity
                 mResolvingConnectionFailure = false;
             }
         }
-
-        // Put code here to display the sign-in button
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -126,6 +135,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
     // Call when the sign-in button is clicked
     public void signInClicked() {
+        bloopView.bloop();
         if (!mSignInClicked) {
             mSignInClicked = true;
             mGoogleApiClient.connect();
@@ -136,10 +146,10 @@ public class PlayLoginActivity extends AppCompatActivity
         }
     }
 
+    // removed mGoogle connect here because bug where locking/unlocking logged in for some reason
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
     }
 
     @Override
