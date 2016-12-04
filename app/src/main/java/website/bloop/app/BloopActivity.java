@@ -57,7 +57,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         ButterKnife.bind(this);
 
-        mButtonPlaceFlag.setOnClickListener(view -> sonarView.bloop());
+        mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
 
         //TODO better data structure for this
         mBootprintLocations = new ArrayList<>(MAX_BOOTPRINTS);
@@ -208,7 +208,8 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void placeFlag() {
         if (mCurrentLocation != null) {
-
+            // TODO organize bloop and placing flag better
+            sonarView.bloop();
         }
     }
 
