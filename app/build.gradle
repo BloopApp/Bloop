@@ -26,6 +26,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+    }
 }
 
 dependencies {
@@ -72,4 +75,8 @@ dependencies {
     // other
     compile 'com.google.android.gms:play-services:9.8.0'
     compile 'com.android.support:design:25.0.1'
+
+    // fast android networking
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-jackson:2.1.0'
 }

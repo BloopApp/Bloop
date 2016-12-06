@@ -38,8 +38,7 @@ public class FlagCreationActivity extends AppCompatActivity {
     @BindView(R.id.flag_view)
     FlagView mFlagView;
 
-    @BindView(R.id.next_button)
-    Button mNextButton;
+    @BindView(R.id.next_button) Button mNextButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
