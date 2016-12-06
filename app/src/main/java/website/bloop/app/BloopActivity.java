@@ -1,5 +1,6 @@
 package website.bloop.app;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
@@ -210,6 +211,10 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         if (mCurrentLocation != null) {
             // TODO organize bloop and placing flag better
             sonarView.bloop();
+
+            final Intent placeFlagIntent = new Intent(this, FlagCreationActivity.class);
+            placeFlagIntent.putExtra(FlagCreationActivity.FLAG_LOCATION, mCurrentLocation);
+            startActivity(placeFlagIntent);
         }
     }
 

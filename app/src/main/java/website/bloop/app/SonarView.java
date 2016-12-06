@@ -22,8 +22,6 @@ public class SonarView extends RelativeLayout {
     private int mSonarColor;
     private Paint mPaint;
     private LayoutParams mSonarBloopParams;
-    private AnimatorSet mAnimatorSet;
-    private ArrayList<Animator> mAnimatorList;
     private ArrayList<SonarBloopView> mSonarBloopViewList;
 
     public SonarView(Context context) {
@@ -58,11 +56,6 @@ public class SonarView extends RelativeLayout {
 
         mSonarBloopParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mSonarBloopParams.addRule(CENTER_IN_PARENT, TRUE);
-
-        mAnimatorSet = new AnimatorSet();
-        mAnimatorSet.setInterpolator(new DecelerateInterpolator());
-
-        mAnimatorList = new ArrayList<>();
 
         mSonarBloopViewList = new ArrayList<>();
     }
@@ -115,7 +108,7 @@ public class SonarView extends RelativeLayout {
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
-            mPaint.setAlpha(255 - (int) (mRadiusCoef * 255));
+            mPaint.setAlpha((int) (((1.0 - mRadiusCoef) * 0.5) * 255));
 
             canvas.drawCircle(getWidth() / 2, getHeight() / 2, mRadiusCoef * mBloopRadius, mPaint);
         }
