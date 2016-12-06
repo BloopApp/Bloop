@@ -48,13 +48,16 @@ public class PlayLoginActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        // TODO use singleton/application to save mClient object
+        // TODO check instantiate this properly for leaderboards because of BloopApplication
         // Create the Google Api Client with access to the Play Games services
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
+
+        // set to application (like singleton) so we can re-call it
+        BloopApplication.getInstance().setClient(mGoogleApiClient);
 
         loginButton.setOnClickListener(view -> signInClicked());
     }
