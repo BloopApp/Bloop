@@ -18,11 +18,11 @@ public class BloopApplication extends Application {
         mInstance = this;
     }
 
-    public static BloopApplication getInstance(){
-        if(mInstance == null)
-        {
+    public static BloopApplication getInstance() {
+        if (mInstance == null) {
             mInstance = new BloopApplication();
         }
+
         return mInstance;
     }
 
