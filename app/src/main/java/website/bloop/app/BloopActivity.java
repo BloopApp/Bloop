@@ -1,5 +1,6 @@
 package website.bloop.app;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
@@ -230,19 +231,27 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void placeFlag() {
         if (mCurrentLocation != null) {
-            Call<ResponseBody> call = mService.placeFlag(new PlayerLocation(mPlayerId, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    //TODO: Place flag onscreen
-                }
+            // TODO organize bloop and placing flag better
 
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                }
-            });
+            final Intent placeFlagIntent = new Intent(this, FlagCreationActivity.class);
+            placeFlagIntent.putExtra(FlagCreationActivity.FLAG_LOCATION, mCurrentLocation);
+            startActivity(placeFlagIntent);
         }
+    }
+
+    private void sendPlaceFlagRequest() {
+        Call<ResponseBody> call = mService.placeFlag(new PlayerLocation(mPlayerId, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                //TODO: Place flag onscreen
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
     }
 
     private void updateBloopFrequency() {
