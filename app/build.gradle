@@ -12,6 +12,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
 
         // build config
         resValue "string", "BLOOP_GOOGLE_MAPS_API_KEY", BLOOP_GOOGLE_MAPS_API_KEY

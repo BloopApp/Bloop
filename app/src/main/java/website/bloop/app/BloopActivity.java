@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.games.Games;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -62,6 +64,8 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private long mPlayerId = 3; //TODO: make this not hard-coded
     private double mBloopFrequency;
 
+    @BindView(R.id.button_settings) Button mButtonSettings;
+
     @BindView(R.id.button_place_flag) Button mButtonPlaceFlag;
 
     @BindView(R.id.sonar_view) SonarView sonarView;
@@ -72,6 +76,8 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_bloop);
 
         ButterKnife.bind(this);
+
+        mButtonSettings.setOnClickListener(view -> showSettings());
 
         mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
 
@@ -299,5 +305,11 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         // we don't want this to be fixed.
         mMap.getUiSettings().setAllGesturesEnabled(false);
+    }
+
+    private void showSettings() {
+        BloopApplication.getInstance().getClient().connect();
+        Games.signOut(BloopApplication.getInstance().getClient());
+        Toast.makeText(this, "Signed out of Play Games", Toast.LENGTH_SHORT).show();
     }
 }

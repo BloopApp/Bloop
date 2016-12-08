@@ -31,4 +31,13 @@
         android:padding="20dp"
         android:layout_margin="10dp"
         android:alpha="0.9" />
+
+    <Button
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/button_settings"
+        android:alpha="0.7"
+        android:background="@drawable/ic_setting"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
 </RelativeLayout>
