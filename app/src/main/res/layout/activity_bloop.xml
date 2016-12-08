@@ -40,4 +40,11 @@
         android:background="@drawable/ic_setting"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/settings_fragment"
+        android:alpha="0.7" />
+
 </RelativeLayout>

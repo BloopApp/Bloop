@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
@@ -316,23 +317,29 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
     // TODO currently need to press button twice to properly logout
     private void showSettings() {
-        GoogleApiClient mGoogleApiClient = BloopApplication.getInstance().getClient();
+        SettingsFragment newFragment = new SettingsFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.settings_fragment, newFragment);
+        transaction.addToBackStack( "tag" ).commit();;
 
-        if (!mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.connect();
-        }
 
-        if (mGoogleApiClient.isConnected()) {
-            Log.d("BLOOPACTIVITY", mGoogleApiClient.isConnected() + " ");
-            Log.d("BLOOPACTIVITY", "Trying to sign out");
-            Games.signOut(mGoogleApiClient).setResultCallback(
-                    new ResultCallback<Status>() {
-                        @Override
-                        public void onResult(Status status) {
-                            Log.d("BLOOPACTIVITY", "signed out");
-                        }
-                    });
-        }
+//        GoogleApiClient mGoogleApiClient = BloopApplication.getInstance().getClient();
+//
+//        if (!mGoogleApiClient.isConnected()) {
+//            mGoogleApiClient.connect();
+//        }
+//
+//        if (mGoogleApiClient.isConnected()) {
+//            Log.d("BLOOPACTIVITY", mGoogleApiClient.isConnected() + " ");
+//            Log.d("BLOOPACTIVITY", "Trying to sign out");
+//            Games.signOut(mGoogleApiClient).setResultCallback(
+//                    new ResultCallback<Status>() {
+//                        @Override
+//                        public void onResult(Status status) {
+//                            Log.d("BLOOPACTIVITY", "signed out");
+//                        }
+//                    });
+//        }
 
 //        Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
 //        Toast.makeText(this, "Signed out of Play Games", Toast.LENGTH_SHORT).show();
