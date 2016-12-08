@@ -63,6 +63,11 @@ public class PlayLoginActivity extends AppCompatActivity
         loginButton.setOnClickListener(view -> signInClicked());
     }
 
+//    @Override
+//    public void onNewIntent(Intent intent) {
+//
+//    }
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
@@ -143,14 +148,8 @@ public class PlayLoginActivity extends AppCompatActivity
     // Call when the sign-in button is clicked
     public void signInClicked() {
         bloopView.bloop();
-        if (!mSignInClicked) {
-            mSignInClicked = true;
-            mGoogleApiClient.connect();
-        } else {
-            mSignInClicked = false;
-            Games.signOut(mGoogleApiClient);
-            loginText.setText(R.string.signin_out);
-        }
+        mSignInClicked = true;
+        mGoogleApiClient.connect();
     }
 
     // removed mGoogle connect here because bug where locking/unlocking logged in for some reason
