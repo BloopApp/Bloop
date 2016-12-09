@@ -8,14 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.Player;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,7 +20,6 @@ import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
-import com.google.example.games.basegameutils.BaseGameUtils;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.patloew.rxlocation.RxLocation;
@@ -49,8 +41,6 @@ import website.bloop.app.api.APIPath;
 import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
-
-import static com.google.android.gms.common.ConnectionResult.SUCCESS;
 
 public class BloopActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = "BloopActivity";
@@ -84,8 +74,6 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_bloop);
 
         ButterKnife.bind(this);
-
-        BloopApplication.getInstance().getClient().connect();
 
         mButtonSettings.setOnClickListener(view -> showSettings());
 
@@ -317,29 +305,11 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         mMap.getUiSettings().setAllGesturesEnabled(false);
     }
 
-    // TODO currently need to press button twice to properly logout
+    // TODO not complete yet
     private void showSettings() {
         SettingsFragment newFragment = new SettingsFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.settings_fragment, newFragment);
         transaction.addToBackStack("tag").commit();;
-
-
-//        if (mGoogleApiClient.isConnected()) {
-//            Log.d("BLOOPACTIVITY", mGoogleApiClient.isConnected() + " ");
-//            Log.d("BLOOPACTIVITY", "Trying to sign out");
-//            Games.signOut(mGoogleApiClient).setResultCallback(
-//                    new ResultCallback<Status>() {
-//                        @Override
-//                        public void onResult(Status status) {
-//                            Log.d("BLOOPACTIVITY", "signed out");
-//                        }
-//                    });
-//        }
-
-//        Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
-//        Toast.makeText(this, "Signed out of Play Games", Toast.LENGTH_SHORT).show();
-//        Log.d("BLOOPACTIVITY", BloopApplication.getInstance().getClient().isConnected() + " ");
-//        Games.signOut(BloopApplication.getInstance().getClient());
     }
 }

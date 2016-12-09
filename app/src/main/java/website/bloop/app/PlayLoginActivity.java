@@ -63,11 +63,6 @@ public class PlayLoginActivity extends AppCompatActivity
         loginButton.setOnClickListener(view -> signInClicked());
     }
 
-//    @Override
-//    public void onNewIntent(Intent intent) {
-//
-//    }
-
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
@@ -77,6 +72,7 @@ public class PlayLoginActivity extends AppCompatActivity
             displayName = "???";
         } else {
             displayName = p.getDisplayName();
+            BloopApplication.getInstance().setUserId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
         }
 
         // hide button on login
@@ -151,17 +147,4 @@ public class PlayLoginActivity extends AppCompatActivity
         mSignInClicked = true;
         mGoogleApiClient.connect();
     }
-
-    // removed mGoogle connect here because bug where locking/unlocking logged in for some reason
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mGoogleApiClient.disconnect();
-    }
 }
-
