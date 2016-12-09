@@ -20,6 +20,14 @@ import com.google.example.games.basegameutils.BaseGameUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
+import website.bloop.app.api.APIPath;
+import website.bloop.app.api.BloopAPIService;
 
 /**
  * Login authentication through Google Play Games
@@ -37,6 +45,7 @@ public class PlayLoginActivity extends AppCompatActivity
     private boolean mSignInClicked = false;
 
     private GoogleApiClient mGoogleApiClient;
+    private BloopAPIService mService;
 
     @BindView(R.id.signInName)
     TextView loginText;
@@ -61,8 +70,15 @@ public class PlayLoginActivity extends AppCompatActivity
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
 
+        mService = new Retrofit.Builder()
+                .baseUrl(APIPath.BASE_PATH)
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build()
+                .create(BloopAPIService.class);
+
         // set to application (like singleton) so we can re-call it
         BloopApplication.getInstance().setClient(mGoogleApiClient);
+        BloopApplication.getInstance().setService(mService);
 
         SharedPreferences loginPref = getSharedPreferences("LoginPREF", Context.MODE_PRIVATE);
         boolean loggedIn = loginPref.getBoolean("relogin", false);
@@ -80,12 +96,28 @@ public class PlayLoginActivity extends AppCompatActivity
     public void onConnected(@Nullable Bundle bundle) {
         Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
         String displayName;
+        String playerId;
         if (p == null) {
             Log.w(TAG, "mGamesClient.getCurrentPlayer() is NULL!");
             displayName = "???";
         } else {
             displayName = p.getDisplayName();
-            BloopApplication.getInstance().setUserId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
+            playerId = Games.Players.getCurrentPlayerId(mGoogleApiClient);
+            BloopApplication.getInstance().setPlayerName(displayName);
+            BloopApplication.getInstance().setPlayerId(playerId);
+            website.bloop.app.api.Player player = new website.bloop.app.api.Player(displayName, playerId);
+            Call<ResponseBody> call = mService.addPlayer(player);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                }
+            });
         }
 
         // hide button on login

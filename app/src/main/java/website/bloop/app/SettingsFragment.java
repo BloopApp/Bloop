@@ -23,36 +23,41 @@ import butterknife.ButterKnife;
  */
 public class SettingsFragment extends Fragment {
     @BindView(R.id.leaderboard_text)
-    TextView leaderboardText;
+    TextView mLeaderboardText;
 
-    @BindView(R.id.signOutButton)
-    Button signOutButton;
+    @BindView(R.id.sign_out_button)
+    Button mSignOutButton;
 
     private GoogleApiClient mGoogleApiClient;
 
     public SettingsFragment() {
+        // required default constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
         ButterKnife.bind(this, view);
 
         mGoogleApiClient = BloopApplication.getInstance().getClient();
 
-        signOutButton.setOnClickListener(frag -> signOut());
+        mSignOutButton.setOnClickListener(frag -> signOut());
 
-        leaderboardText.setText("This is just more text to see if everything looks all peachy");
+        mLeaderboardText.setText("This is just more text to see if everything looks all peachy");
         return view;
     }
 
     private void signOut() {
         if (mGoogleApiClient.isConnected()) {
             // TODO do we even need a result callback?
-            Games.signOut(mGoogleApiClient).setResultCallback(status -> {
-                        Toast.makeText(getContext(), "Signed out of Play Games", Toast.LENGTH_SHORT).show();
-                    });
+            Games.signOut(mGoogleApiClient).setResultCallback(
+                    status -> Toast.makeText(
+                            getContext(),
+                            "Signed out of Play Games",
+                            Toast.LENGTH_SHORT
+                    ).show()
+            );
         }
 
         // set shared pref to go back to login screen

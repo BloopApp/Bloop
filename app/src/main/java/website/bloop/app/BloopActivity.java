@@ -32,14 +32,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
-import website.bloop.app.api.APIPath;
-import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
 
@@ -58,9 +53,6 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private List<GroundOverlay> mBootprintLocations;
     private Location mCurrentLocation;
     private RxLocation mRxLocation;
-
-    private BloopAPIService mService;
-    private long mPlayerId = 3; //TODO: make this not hard-coded
 
     private double mBloopFrequency;
     private Handler mBloopHandler;
@@ -109,13 +101,6 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
                 startTrackingLocation();
             }
         });
-
-        // init BloopAPI
-        mService = new Retrofit.Builder()
-                .baseUrl(APIPath.BASE_PATH)
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build()
-                .create(BloopAPIService.class);
 
         // init blooping
         mBloopHandler = new Handler();
@@ -259,31 +244,15 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         }
     }
 
-    private void sendPlaceFlagRequest() {
-        Call<ResponseBody> call = mService.placeFlag(new PlayerLocation(mPlayerId, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                //TODO: Place flag onscreen
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
-        });
-    }
-
     private void updateBloopFrequency() {
+        BloopApplication application = BloopApplication.getInstance();
         if (mCurrentLocation != null) {
-            Call<NearbyFlag> call = mService.getNearestFlag();
+            Call<NearbyFlag> call = application.getService().getNearestFlag(new PlayerLocation(application.getPlayerId(), mCurrentLocation));
             call.enqueue(new Callback<NearbyFlag>() {
                 @Override
                 public void onResponse(Call<NearbyFlag> call, Response<NearbyFlag> response) {
                     if (response.isSuccessful()) {
                         mBloopFrequency = response.body().getBloopFrequency();
-
-                        Log.d(TAG, "wat: " + mBloopFrequency);
 
                         String playerName = response.body().getPlayerName();
                         if (playerName != null) {
@@ -299,10 +268,6 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
                 @Override
                 public void onFailure(Call<NearbyFlag> call, Throwable t) {
                     Log.e(TAG, t.getMessage());
-
-                    //TODO: remove test
-                    mBloopFrequency = Math.random() * 5;
-                    rescheduleBloops();
                 }
             });
         }
@@ -310,6 +275,14 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void rescheduleBloops() {
         double timeSinceLastBloop = (double) (System.currentTimeMillis() - mLastBloopTime);
+
+        if (mBloopFrequency == 0d) {
+            // nvm, we done here.
+            // cancel the next bloop by removing our reference to it
+            mBloopRunnable = null;
+            return;
+        }
+
         double newBloopInterval = (1000d / mBloopFrequency); // in millis
 
         double timeUntilNextBloop = newBloopInterval - timeSinceLastBloop;

@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import website.bloop.app.api.BloopAPIService;
+
 /**
  *
  */
@@ -11,7 +13,10 @@ public class BloopApplication extends Application {
     private static BloopApplication mInstance = null;
 
     private GoogleApiClient mGoogleApiClient;
-    private String userId;
+    private BloopAPIService mService;
+
+    private String playerId;
+    private String playerName;
 
     @Override
     public void onCreate() {
@@ -35,11 +40,27 @@ public class BloopApplication extends Application {
         mGoogleApiClient = client;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getPlayerId() {
+        return playerId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public BloopAPIService getService() {
+        return mService;
+    }
+
+    public void setService(BloopAPIService service) {
+        mService = service;
     }
 }
