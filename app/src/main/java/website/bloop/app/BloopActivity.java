@@ -62,11 +62,14 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private long mPlayerId = 3; //TODO: make this not hard-coded
     private double mBloopFrequency;
 
-    @BindView(R.id.button_settings) Button mButtonSettings;
+    @BindView(R.id.button_settings)
+    Button mButtonSettings;
 
-    @BindView(R.id.button_place_flag) Button mButtonPlaceFlag;
+    @BindView(R.id.button_place_flag)
+    Button mButtonPlaceFlag;
 
-    @BindView(R.id.sonar_view) SonarView sonarView;
+    @BindView(R.id.sonar_view)
+    SonarView sonarView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
