@@ -15,8 +15,8 @@ public interface BloopAPIService {
     @POST(APIPath.PLACE_FLAG)
     Call<ResponseBody> placeFlag(@Body PlayerLocation location);
 
-    @GET(APIPath.GET_NEARBY)
-    Call<NearbyFlag> getNearestFlag();
+    @POST(APIPath.CHECK_NEARBY)
+    Call<NearbyFlag> getNearestFlag(@Body PlayerLocation location);
 
     @POST(APIPath.CAPTURE_FLAG)
     Call<ResponseBody> captureFlag(@Body NearbyFlag flag);

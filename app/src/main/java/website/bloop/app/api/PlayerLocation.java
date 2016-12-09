@@ -1,5 +1,7 @@
 package website.bloop.app.api;
 
+import android.location.Location;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -20,6 +22,12 @@ public class PlayerLocation {
         this.playerId = playerId;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public PlayerLocation(long playerId, Location location) {
+        this.playerId = playerId;
+        this.latitude = location.getLatitude();
+        this.longitude = location.getLongitude();
     }
 
     public PlayerLocation() { }

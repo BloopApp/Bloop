@@ -244,7 +244,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private void sendPlaceFlagRequest() {
-        Call<ResponseBody> call = mService.placeFlag(new PlayerLocation(mPlayerId, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+        Call<ResponseBody> call = mService.placeFlag(new PlayerLocation(mPlayerId, mCurrentLocation));
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -260,7 +260,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private void updateBloopFrequency() {
         if (mCurrentLocation != null) {
-            Call<NearbyFlag> call = mService.getNearestFlag();
+            Call<NearbyFlag> call = mService.getNearestFlag(new PlayerLocation(mPlayerId, mCurrentLocation));
             call.enqueue(new Callback<NearbyFlag>() {
                 @Override
                 public void onResponse(Call<NearbyFlag> call, Response<NearbyFlag> response) {

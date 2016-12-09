@@ -17,9 +17,9 @@ public class NearbyFlag {
     private String playerName;
 
     @JsonProperty
-    private long capturingPlayerId;
+    private String capturingPlayerId;
 
-    public NearbyFlag(long flagId, long capturingPlayerId) {
+    public NearbyFlag(long flagId, String capturingPlayerId) {
         this.flagId = flagId;
         this.capturingPlayerId = capturingPlayerId;
     }
@@ -50,11 +50,11 @@ public class NearbyFlag {
         this.playerName = playerName;
     }
 
-    public long getCapturingPlayerId() {
+    public String getCapturingPlayerId() {
         return capturingPlayerId;
     }
 
-    public void setCapturingPlayerId(long capturingPlayerId) {
+    public void setCapturingPlayerId(String capturingPlayerId) {
         this.capturingPlayerId = capturingPlayerId;
     }
 }
