@@ -38,9 +38,14 @@ public class PlayLoginActivity extends AppCompatActivity
 
     private GoogleApiClient mGoogleApiClient;
 
-    @BindView(R.id.signInName) TextView loginText;
-    @BindView(R.id.signInButton) Button loginButton;
-    @BindView(R.id.sonarView) SonarView bloopView;
+    @BindView(R.id.signInName)
+    TextView loginText;
+
+    @BindView(R.id.signInButton)
+    Button loginButton;
+
+    @BindView(R.id.sonarView)
+    SonarView bloopView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +54,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        // TODO check instantiate this properly for leaderboards because of BloopApplication
-        // Create the Google Api Client with access to the Play Games services
+        // create the Google Api Client with access to the Play Games services
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -59,6 +63,19 @@ public class PlayLoginActivity extends AppCompatActivity
 
         // set to application (like singleton) so we can re-call it
         BloopApplication.getInstance().setClient(mGoogleApiClient);
+
+        SharedPreferences loginPref = getSharedPreferences("LoginPREF", Context.MODE_PRIVATE);
+        boolean loggedIn = loginPref.getBoolean("relogin", false);
+
+        if (loggedIn) {
+            mGoogleApiClient.connect();
+
+            // start the main game now
+            Intent newIntent = new Intent(getBaseContext(), BloopActivity.class);
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(newIntent);
+            finish();
+        }
 
         loginButton.setOnClickListener(view -> signInClicked());
     }
@@ -79,10 +96,10 @@ public class PlayLoginActivity extends AppCompatActivity
         loginButton.setVisibility(View.INVISIBLE);
         loginText.setText(displayName);
 
-        // set the pref to skip this activity now
-        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        // store that we are logged in
+        SharedPreferences pref = getSharedPreferences("LoginPREF", Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = pref.edit();
-        ed.putBoolean("activity_executed", true);
+        ed.putBoolean("relogin", true);
         ed.apply();
 
         // start the main game now
