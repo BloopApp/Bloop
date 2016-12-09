@@ -58,8 +58,6 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private Location mCurrentLocation;
     private RxLocation mRxLocation;
 
-    private BloopAPIService mService;
-    private long mPlayerId = 3; //TODO: make this not hard-coded
     private double mBloopFrequency;
 
     @BindView(R.id.button_settings)
@@ -100,12 +98,6 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
                 startTrackingLocation();
             }
         });
-
-        mService = new Retrofit.Builder()
-                .baseUrl(APIPath.BASE_PATH)
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build()
-                .create(BloopAPIService.class);
     }
 
     /**
@@ -247,7 +239,8 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private void sendPlaceFlagRequest() {
-        Call<ResponseBody> call = mService.placeFlag(new PlayerLocation(mPlayerId, mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+        BloopApplication application = BloopApplication.getInstance();
+        Call<ResponseBody> call = application.getService().placeFlag(new PlayerLocation(application.getPlayerId(), mCurrentLocation));
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -262,8 +255,9 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private void updateBloopFrequency() {
+        BloopApplication application = BloopApplication.getInstance();
         if (mCurrentLocation != null) {
-            Call<NearbyFlag> call = mService.getNearestFlag();
+            Call<NearbyFlag> call = application.getService().getNearestFlag(new PlayerLocation(application.getPlayerId(), mCurrentLocation));
             call.enqueue(new Callback<NearbyFlag>() {
                 @Override
                 public void onResponse(Call<NearbyFlag> call, Response<NearbyFlag> response) {
