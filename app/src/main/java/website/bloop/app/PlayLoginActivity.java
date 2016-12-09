@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -37,9 +38,14 @@ public class PlayLoginActivity extends AppCompatActivity
 
     private GoogleApiClient mGoogleApiClient;
 
-    @BindView(R.id.signInName) TextView loginText;
-    @BindView(R.id.signInButton) Button loginButton;
-    @BindView(R.id.sonarView) SonarView bloopView;
+    @BindView(R.id.signInName)
+    TextView loginText;
+
+    @BindView(R.id.signInButton)
+    Button loginButton;
+
+    @BindView(R.id.sonarView)
+    SonarView bloopView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +54,24 @@ public class PlayLoginActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        // TODO use singleton/application to save mClient object
-        // Create the Google Api Client with access to the Play Games services
+        // create the Google Api Client with access to the Play Games services
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
+
+        // set to application (like singleton) so we can re-call it
+        BloopApplication.getInstance().setClient(mGoogleApiClient);
+
+        SharedPreferences loginPref = getSharedPreferences("LoginPREF", Context.MODE_PRIVATE);
+        boolean loggedIn = loginPref.getBoolean("relogin", false);
+
+        if (loggedIn) {
+            mGoogleApiClient.connect();
+
+            // TODO move things to service
+        }
 
         loginButton.setOnClickListener(view -> signInClicked());
     }
@@ -68,13 +85,17 @@ public class PlayLoginActivity extends AppCompatActivity
             displayName = "???";
         } else {
             displayName = p.getDisplayName();
+            BloopApplication.getInstance().setUserId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
         }
+
+        // hide button on login
+        loginButton.setVisibility(View.INVISIBLE);
         loginText.setText(displayName);
 
-        // set the pref to skip this activity now
-        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        // store that we are logged in
+        SharedPreferences pref = getSharedPreferences("LoginPREF", Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = pref.edit();
-        ed.putBoolean("activity_executed", true);
+        ed.putBoolean("relogin", true);
         ed.apply();
 
         // start the main game now
@@ -136,26 +157,7 @@ public class PlayLoginActivity extends AppCompatActivity
     // Call when the sign-in button is clicked
     public void signInClicked() {
         bloopView.bloop();
-        if (!mSignInClicked) {
-            mSignInClicked = true;
-            mGoogleApiClient.connect();
-        } else {
-            mSignInClicked = false;
-            Games.signOut(mGoogleApiClient);
-            loginText.setText(R.string.signin_out);
-        }
-    }
-
-    // removed mGoogle connect here because bug where locking/unlocking logged in for some reason
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mGoogleApiClient.disconnect();
+        mSignInClicked = true;
+        mGoogleApiClient.connect();
     }
 }
-

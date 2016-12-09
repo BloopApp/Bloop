@@ -6,6 +6,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Button;
 
@@ -42,8 +43,6 @@ import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
 
-import static android.os.SystemClock.uptimeMillis;
-
 public class BloopActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = "BloopActivity";
     private static final long LOCATION_UPDATE_MS = 5000;
@@ -66,9 +65,15 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private double mBloopFrequency;
     private Handler mBloopHandler;
 
-    @BindView(R.id.button_place_flag) Button mButtonPlaceFlag;
+    @BindView(R.id.button_settings)
+    Button mButtonSettings;
 
-    @BindView(R.id.sonar_view) SonarView sonarView;
+    @BindView(R.id.button_place_flag)
+    Button mButtonPlaceFlag;
+
+    @BindView(R.id.sonar_view)
+    SonarView sonarView;
+
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
 
@@ -78,6 +83,8 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_bloop);
 
         ButterKnife.bind(this);
+
+        mButtonSettings.setOnClickListener(view -> showSettings());
 
         mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
 
@@ -365,5 +372,13 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         // we don't want this to be fixed.
         mMap.getUiSettings().setAllGesturesEnabled(false);
+    }
+
+    // TODO not complete yet
+    private void showSettings() {
+        SettingsFragment newFragment = new SettingsFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.settings_fragment, newFragment);
+        transaction.addToBackStack("tag").commit();
     }
 }

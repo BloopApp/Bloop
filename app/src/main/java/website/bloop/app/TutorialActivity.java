@@ -21,14 +21,6 @@ public class TutorialActivity extends AppIntro {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // launch once logic
-        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
-        if (pref.getBoolean("activity_executed", false)) {
-            Intent intent = new Intent(this, BloopActivity.class);
-            startActivity(intent);
-            finish();
-        }
-
         // first content: change flag
         addSlide(AppIntroFragment.newInstance("Create your flag",
                 "To get started, customize your flag to your liking. Remember, others will see this!",
@@ -51,7 +43,13 @@ public class TutorialActivity extends AppIntro {
     @Override
     public void onSkipPressed(Fragment currentFragment) {
         super.onSkipPressed(currentFragment);
-        // Do something when users tap on Skip button.
+
+        // set the pref to skip this activity now
+        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("activity_executed", true);
+        ed.apply();
+
         Intent newIntent = new Intent(getBaseContext(), PlayLoginActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(newIntent);
@@ -61,7 +59,13 @@ public class TutorialActivity extends AppIntro {
     @Override
     public void onDonePressed(Fragment currentFragment) {
         super.onDonePressed(currentFragment);
-        // Do something when users tap on Done button.
+
+        // set the pref to skip this activity now
+        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("activity_executed", true);
+        ed.apply();
+
         Intent newIntent = new Intent(getBaseContext(), PlayLoginActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(newIntent);
