@@ -85,6 +85,8 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         ButterKnife.bind(this);
 
+        BloopApplication.getInstance().getClient().connect();
+
         mButtonSettings.setOnClickListener(view -> showSettings());
 
         mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
@@ -320,15 +322,9 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         SettingsFragment newFragment = new SettingsFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.settings_fragment, newFragment);
-        transaction.addToBackStack( "tag" ).commit();;
+        transaction.addToBackStack("tag").commit();;
 
 
-//        GoogleApiClient mGoogleApiClient = BloopApplication.getInstance().getClient();
-//
-//        if (!mGoogleApiClient.isConnected()) {
-//            mGoogleApiClient.connect();
-//        }
-//
 //        if (mGoogleApiClient.isConnected()) {
 //            Log.d("BLOOPACTIVITY", mGoogleApiClient.isConnected() + " ");
 //            Log.d("BLOOPACTIVITY", "Trying to sign out");
