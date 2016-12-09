@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Button;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -42,6 +42,8 @@ import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
 
+import static android.os.SystemClock.uptimeMillis;
+
 public class BloopActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = "BloopActivity";
     private static final long LOCATION_UPDATE_MS = 5000;
@@ -60,11 +62,15 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
     private BloopAPIService mService;
     private long mPlayerId = 3; //TODO: make this not hard-coded
+
     private double mBloopFrequency;
+    private Handler mBloopHandler;
 
     @BindView(R.id.button_place_flag) Button mButtonPlaceFlag;
 
     @BindView(R.id.sonar_view) SonarView sonarView;
+    private long mLastBloopTime;
+    private Runnable mBloopRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,17 +81,20 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
 
+        // init bootprints
         //TODO better data structure for this
         mBootprintLocations = new ArrayList<>(MAX_BOOTPRINTS);
 
         mLeftBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_left);
         mRightBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_right);
 
+        // init map
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // init location
         mRxLocation = new RxLocation(this);
 
         requestLocationPermissions().subscribe(granted -> {
@@ -94,11 +103,15 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
             }
         });
 
+        // init BloopAPI
         mService = new Retrofit.Builder()
                 .baseUrl(APIPath.BASE_PATH)
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build()
                 .create(BloopAPIService.class);
+
+        // init blooping
+        mBloopHandler = new Handler();
     }
 
     /**
@@ -262,19 +275,72 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
                 public void onResponse(Call<NearbyFlag> call, Response<NearbyFlag> response) {
                     if (response.isSuccessful()) {
                         mBloopFrequency = response.body().getBloopFrequency();
+
+                        Log.d(TAG, "wat: " + mBloopFrequency);
+
                         String playerName = response.body().getPlayerName();
                         if (playerName != null) {
-                            //TODO: alert the user that they can capture this flag
+                            // if player name is present, that means that there is a flag a
+                            // capturable distance away
+                            // TODO: alert the user that they can capture this flag
                         }
+
+                        rescheduleBloops();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<NearbyFlag> call, Throwable t) {
+                    Log.e(TAG, t.getMessage());
 
+                    //TODO: remove test
+                    mBloopFrequency = Math.random() * 5;
+                    rescheduleBloops();
                 }
             });
         }
+    }
+
+    private void rescheduleBloops() {
+        double timeSinceLastBloop = (double) (System.currentTimeMillis() - mLastBloopTime);
+        double newBloopInterval = (1000d / mBloopFrequency); // in millis
+
+        double timeUntilNextBloop = newBloopInterval - timeSinceLastBloop;
+
+        mBloopRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // if this runnable isn't stored on the object, that means that it's been
+                    // "canceled", don't bloop
+                    if (this.equals(mBloopRunnable)) {
+                        bloop();
+                    }
+
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                } finally {
+                    if (this.equals(mBloopRunnable)) {
+                        mBloopHandler.postDelayed(mBloopRunnable, (long) newBloopInterval);
+                    }
+                }
+            }
+        };
+
+        if (timeUntilNextBloop > 0) {
+            // schedule next bloop at difference from last
+            mBloopHandler.postDelayed(mBloopRunnable, (long) timeUntilNextBloop);
+        } else {
+            // immediately bloop if <= 0
+            mBloopHandler.post(mBloopRunnable);
+        }
+    }
+
+    private void bloop() {
+        sonarView.bloop();
+        //TODO: play sound
+
+        mLastBloopTime = System.currentTimeMillis();
     }
 
     /**
