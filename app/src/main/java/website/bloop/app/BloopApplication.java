@@ -4,9 +4,6 @@ import android.app.Application;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
-import website.bloop.app.api.APIPath;
 import website.bloop.app.api.BloopAPIService;
 
 /**
@@ -16,21 +13,15 @@ public class BloopApplication extends Application {
     private static BloopApplication mInstance = null;
 
     private GoogleApiClient mGoogleApiClient;
+    private BloopAPIService mService;
+
     private String playerId;
     private String playerName;
-
-    private BloopAPIService mService;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-
-        mService = new Retrofit.Builder()
-                .baseUrl(APIPath.BASE_PATH)
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build()
-                .create(BloopAPIService.class);
     }
 
     public static BloopApplication getInstance() {
@@ -67,5 +58,9 @@ public class BloopApplication extends Application {
 
     public BloopAPIService getService() {
         return mService;
+    }
+
+    public void setService(BloopAPIService service) {
+        mService = service;
     }
 }
