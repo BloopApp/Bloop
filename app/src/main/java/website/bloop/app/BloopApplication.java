@@ -11,6 +11,7 @@ public class BloopApplication extends Application {
     private static BloopApplication mInstance = null;
 
     private GoogleApiClient mGoogleApiClient;
+    private String userId;
 
     @Override
     public void onCreate() {
@@ -26,11 +27,19 @@ public class BloopApplication extends Application {
         return mInstance;
     }
 
+    public GoogleApiClient getClient() {
+        return mGoogleApiClient;
+    }
+
     public void setClient(GoogleApiClient client) {
         mGoogleApiClient = client;
     }
 
-    public GoogleApiClient getClient() {
-        return mGoogleApiClient;
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

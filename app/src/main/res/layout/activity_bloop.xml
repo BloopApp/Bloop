@@ -12,15 +12,20 @@
         android:layout_height="match_parent"
         tools:context="website.bloop.app.BloopActivity" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/settings_fragment"
+        android:alpha="0.7" />
+
     <view
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         class="website.bloop.app.SonarView"
         android:layout_centerHorizontal="true"
         android:id="@+id/sonar_view" />
-
     <Button
-        android:text="Place Flag"
+        android:text="@string/place_flag"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -31,4 +36,13 @@
         android:padding="20dp"
         android:layout_margin="10dp"
         android:alpha="0.9" />
+    <Button
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/button_settings"
+        android:alpha="0.7"
+        android:background="@drawable/ic_setting"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>
