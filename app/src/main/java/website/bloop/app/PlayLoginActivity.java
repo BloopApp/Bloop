@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -48,13 +49,16 @@ public class PlayLoginActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        // TODO use singleton/application to save mClient object
+        // TODO check instantiate this properly for leaderboards because of BloopApplication
         // Create the Google Api Client with access to the Play Games services
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
+
+        // set to application (like singleton) so we can re-call it
+        BloopApplication.getInstance().setClient(mGoogleApiClient);
 
         loginButton.setOnClickListener(view -> signInClicked());
     }
@@ -69,6 +73,9 @@ public class PlayLoginActivity extends AppCompatActivity
         } else {
             displayName = p.getDisplayName();
         }
+
+        // hide button on login
+        loginButton.setVisibility(View.INVISIBLE);
         loginText.setText(displayName);
 
         // set the pref to skip this activity now
