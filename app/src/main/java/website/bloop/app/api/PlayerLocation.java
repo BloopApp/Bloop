@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PlayerLocation {
     @JsonProperty
-    private long playerId;
+    private String googlePlayId;
 
     @JsonProperty
     private double latitude;
@@ -18,26 +18,26 @@ public class PlayerLocation {
     @JsonProperty
     private double longitude;
 
-    public PlayerLocation(long playerId, double latitude, double longitude) {
-        this.playerId = playerId;
+    public PlayerLocation(String googlePlayId, double latitude, double longitude) {
+        this.googlePlayId = googlePlayId;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public PlayerLocation(long playerId, Location location) {
-        this.playerId = playerId;
+    public PlayerLocation(String googlePlayId, Location location) {
+        this.googlePlayId = googlePlayId;
         this.latitude = location.getLatitude();
         this.longitude = location.getLongitude();
     }
 
     public PlayerLocation() { }
 
-    public long getPlayerId() {
-        return playerId;
+    public String getGooglePlayId() {
+        return googlePlayId;
     }
 
-    public void setPlayerId(long playerId) {
-        this.playerId = playerId;
+    public void setGooglePlayId(String googlePlayId) {
+        this.googlePlayId = googlePlayId;
     }
 
     public double getLatitude() {

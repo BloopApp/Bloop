@@ -20,4 +20,7 @@ public interface BloopAPIService {
 
     @POST(APIPath.CAPTURE_FLAG)
     Call<ResponseBody> captureFlag(@Body NearbyFlag flag);
+
+    @POST(APIPath.ADD_PLAYER)
+    Call<ResponseBody> addPlayer(@Body Player player);
 }

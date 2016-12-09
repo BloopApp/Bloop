@@ -9,4 +9,5 @@ public interface APIPath {
     String PLACE_FLAG = "flag/place";
     String CHECK_NEARBY = "flag/nearby";
     String CAPTURE_FLAG = "flag/capture";
+    String ADD_PLAYER = "players/new";
 }

@@ -20,6 +20,10 @@ import com.google.example.games.basegameutils.BaseGameUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Login authentication through Google Play Games
@@ -80,12 +84,27 @@ public class PlayLoginActivity extends AppCompatActivity
     public void onConnected(@Nullable Bundle bundle) {
         Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
         String displayName;
+        String playerId;
         if (p == null) {
             Log.w(TAG, "mGamesClient.getCurrentPlayer() is NULL!");
             displayName = "???";
         } else {
             displayName = p.getDisplayName();
-            BloopApplication.getInstance().setUserId(Games.Players.getCurrentPlayerId(mGoogleApiClient));
+            playerId = Games.Players.getCurrentPlayerId(mGoogleApiClient);
+            BloopApplication.getInstance().setPlayerName(displayName);
+            BloopApplication.getInstance().setPlayerId(playerId);
+            Call<ResponseBody> call = BloopApplication.getInstance().getService().addPlayer(new website.bloop.app.api.Player(displayName, playerId));
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                }
+            });
         }
 
         // hide button on login
