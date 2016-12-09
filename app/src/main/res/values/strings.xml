@@ -7,4 +7,5 @@
     <string name="signin_failure">Unable to sign in.</string>
     <string name="place_flag">Place Flag</string>
     <string name="signout_button">Sign out from Google</string>
+    <string name="on_flag_placement_fail">Flag placement failed, Sorry!</string>
 </resources>

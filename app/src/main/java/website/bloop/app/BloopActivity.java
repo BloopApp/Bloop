@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -31,14 +32,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
-import website.bloop.app.api.APIPath;
-import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
 
@@ -59,6 +55,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private RxLocation mRxLocation;
 
     private double mBloopFrequency;
+    private Handler mBloopHandler;
 
     @BindView(R.id.button_settings)
     Button mButtonSettings;
@@ -68,6 +65,9 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
     @BindView(R.id.sonar_view)
     SonarView sonarView;
+
+    private long mLastBloopTime;
+    private Runnable mBloopRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,17 +80,20 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
 
+        // init bootprints
         //TODO better data structure for this
         mBootprintLocations = new ArrayList<>(MAX_BOOTPRINTS);
 
         mLeftBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_left);
         mRightBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_right);
 
+        // init map
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // init location
         mRxLocation = new RxLocation(this);
 
         requestLocationPermissions().subscribe(granted -> {
@@ -98,6 +101,9 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
                 startTrackingLocation();
             }
         });
+
+        // init blooping
+        mBloopHandler = new Handler();
     }
 
     /**
@@ -238,22 +244,6 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         }
     }
 
-    private void sendPlaceFlagRequest() {
-        BloopApplication application = BloopApplication.getInstance();
-        Call<ResponseBody> call = application.getService().placeFlag(new PlayerLocation(application.getPlayerId(), mCurrentLocation));
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                //TODO: Place flag onscreen
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
-        });
-    }
-
     private void updateBloopFrequency() {
         BloopApplication application = BloopApplication.getInstance();
         if (mCurrentLocation != null) {
@@ -263,19 +253,74 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
                 public void onResponse(Call<NearbyFlag> call, Response<NearbyFlag> response) {
                     if (response.isSuccessful()) {
                         mBloopFrequency = response.body().getBloopFrequency();
+
                         String playerName = response.body().getPlayerName();
                         if (playerName != null) {
-                            //TODO: alert the user that they can capture this flag
+                            // if player name is present, that means that there is a flag a
+                            // capturable distance away
+                            // TODO: alert the user that they can capture this flag
                         }
+
+                        rescheduleBloops();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<NearbyFlag> call, Throwable t) {
-
+                    Log.e(TAG, t.getMessage());
                 }
             });
         }
+    }
+
+    private void rescheduleBloops() {
+        double timeSinceLastBloop = (double) (System.currentTimeMillis() - mLastBloopTime);
+
+        if (mBloopFrequency == 0d) {
+            // nvm, we done here.
+            // cancel the next bloop by removing our reference to it
+            mBloopRunnable = null;
+            return;
+        }
+
+        double newBloopInterval = (1000d / mBloopFrequency); // in millis
+
+        double timeUntilNextBloop = newBloopInterval - timeSinceLastBloop;
+
+        mBloopRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // if this runnable isn't stored on the object, that means that it's been
+                    // "canceled", don't bloop
+                    if (this.equals(mBloopRunnable)) {
+                        bloop();
+                    }
+
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                } finally {
+                    if (this.equals(mBloopRunnable)) {
+                        mBloopHandler.postDelayed(mBloopRunnable, (long) newBloopInterval);
+                    }
+                }
+            }
+        };
+
+        if (timeUntilNextBloop > 0) {
+            // schedule next bloop at difference from last
+            mBloopHandler.postDelayed(mBloopRunnable, (long) timeUntilNextBloop);
+        } else {
+            // immediately bloop if <= 0
+            mBloopHandler.post(mBloopRunnable);
+        }
+    }
+
+    private void bloop() {
+        sonarView.bloop();
+        //TODO: play sound
+
+        mLastBloopTime = System.currentTimeMillis();
     }
 
     /**
@@ -307,6 +352,6 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         SettingsFragment newFragment = new SettingsFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.settings_fragment, newFragment);
-        transaction.addToBackStack("tag").commit();;
+        transaction.addToBackStack("tag").commit();
     }
 }
