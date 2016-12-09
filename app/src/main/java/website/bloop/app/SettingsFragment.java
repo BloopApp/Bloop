@@ -39,6 +39,8 @@ public class SettingsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
 
+        mGoogleApiClient = BloopApplication.getInstance().getClient();
+
         signOutButton.setOnClickListener(frag -> signOut());
 
         leaderboardText.setText("This is just more text to see if everything looks all peachy");
@@ -47,19 +49,22 @@ public class SettingsFragment extends Fragment {
 
     private void signOut() {
         if (mGoogleApiClient.isConnected()) {
+            // TODO do we even need a result callback?
             Games.signOut(mGoogleApiClient).setResultCallback(status -> {
                         Toast.makeText(getContext(), "Signed out of Play Games", Toast.LENGTH_SHORT).show();
-
-                        Intent newIntent = new Intent(getContext(), PlayLoginActivity.class);
-                        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(newIntent);
-                        getActivity().finish();
                     });
         }
 
-        SharedPreferences pref = getActivity().getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        // set shared pref to go back to login screen
+        SharedPreferences pref = getActivity().getSharedPreferences("LoginPREF", Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = pref.edit();
-        ed.putBoolean("activity_executed", false);
+        ed.putBoolean("relogin", false);
         ed.apply();
+
+
+        Intent newIntent = new Intent(getContext(), PlayLoginActivity.class);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(newIntent);
+        getActivity().finish();
     }
 }
