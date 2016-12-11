@@ -69,6 +69,8 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
 
+    private SettingsFragment mSettingFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +106,9 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         // init blooping
         mBloopHandler = new Handler();
+
+        // init settings
+        mSettingFragment = new SettingsFragment();
     }
 
     /**
@@ -349,9 +354,14 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
     // TODO not complete yet
     private void showSettings() {
-        SettingsFragment newFragment = new SettingsFragment();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.settings_fragment, newFragment);
-        transaction.addToBackStack("tag").commit();
+        if (!mSettingFragment.isAdded()) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.settings_fragment, mSettingFragment);
+            transaction.addToBackStack("tag").commit();
+        } else {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.remove(mSettingFragment);
+            transaction.commit();
+        }
     }
 }
