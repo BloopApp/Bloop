@@ -64,7 +64,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     Button mButtonPlaceFlag;
 
     @BindView(R.id.sonar_view)
-    SonarView sonarView;
+    SonarView mSonarView;
 
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
@@ -317,7 +317,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     }
 
     private void bloop() {
-        sonarView.bloop();
+        mSonarView.bloop();
         //TODO: play sound
 
         mLastBloopTime = System.currentTimeMillis();

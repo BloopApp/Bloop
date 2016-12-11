@@ -12,12 +12,12 @@
         android:layout_height="match_parent"
         tools:context="website.bloop.app.BloopActivity" />
 
-    <view
+    <website.bloop.app.SonarView
+        android:id="@+id/sonar_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="website.bloop.app.SonarView"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/sonar_view" />
+        android:layout_centerHorizontal="true" />
+
     <Button
         android:text="@string/place_flag"
         android:layout_width="match_parent"
@@ -30,6 +30,7 @@
         android:padding="20dp"
         android:layout_margin="10dp"
         android:alpha="0.9" />
+
     <Button
         android:layout_width="40dp"
         android:layout_height="40dp"
