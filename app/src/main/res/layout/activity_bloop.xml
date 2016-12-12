@@ -22,6 +22,15 @@
 
     </website.bloop.app.SonarView>
 
+    <view
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        class="website.bloop.app.BigButtonView"
+        android:id="@+id/big_button_view"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="32dp" />
+
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

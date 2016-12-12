@@ -35,6 +35,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,8 +70,12 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     @BindView(R.id.sonar_view)
     SonarView mSonarView;
 
+    @BindView(R.id.big_button_view)
+    BigButtonView mBigButtonView;
+
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
+    private long mNearbyFlagId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +85,8 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         ButterKnife.bind(this);
 
         mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
+
+        mBigButtonView.setOnClickListener(view -> captureFlag());
 
         // init bootprints
         //TODO better data structure for this
@@ -107,6 +114,32 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         mBloopHandler = new Handler();
 
         setSupportActionBar(mToolbar);
+    }
+
+    private void captureFlag() {
+        if (mNearbyFlagId != 0) {
+            BloopApplication application = BloopApplication.getInstance();
+            final Call<ResponseBody> call = application.getService().captureFlag(
+                    new NearbyFlag(mNearbyFlagId, BloopApplication.getInstance().getPlayerId())
+            );
+
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.code() >= 200 && response.code() < 400) {
+
+                    } else {
+                        Log.e(TAG, response.message());
+                    }
+                    mBigButtonView.hide();
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    mBigButtonView.hide();
+                }
+            });
+        }
     }
 
     /**
@@ -250,7 +283,10 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private void updateBloopFrequency() {
         BloopApplication application = BloopApplication.getInstance();
         if (mCurrentLocation != null) {
-            Call<NearbyFlag> call = application.getService().getNearestFlag(new PlayerLocation(application.getPlayerId(), mCurrentLocation));
+            Call<NearbyFlag> call = application.getService().getNearestFlag(
+                            new PlayerLocation(application.getPlayerId(), mCurrentLocation)
+            );
+
             call.enqueue(new Callback<NearbyFlag>() {
                 @Override
                 public void onResponse(Call<NearbyFlag> call, Response<NearbyFlag> response) {
@@ -262,6 +298,12 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                             // if player name is present, that means that there is a flag a
                             // capturable distance away
                             // TODO: alert the user that they can capture this flag
+                            mNearbyFlagId = response.body().getFlagId();
+
+                            mBigButtonView.show();
+                        } else {
+                            mNearbyFlagId = 0; // this is the "null" value of the flag id
+                            mBigButtonView.hide();
                         }
 
                         rescheduleBloops();
