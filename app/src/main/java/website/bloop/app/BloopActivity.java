@@ -13,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -51,6 +53,9 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final float BOOTPRINT_SIZE_METERS = 10;
     private static final int MAX_BOOTPRINTS = 50;
 
+    private static final String LEADERBOARD_ID = "FlagCaptures";
+    private static final int REQUEST_LEADERBOARD = 1000;
+
     private BitmapDescriptor mLeftBootprint;
     private BitmapDescriptor mRightBootprint;
     private GoogleMap mMap;
@@ -78,6 +83,8 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private Runnable mBloopRunnable;
     private long mNearbyFlagId;
     private Disposable mLocationDisposable;
+    private GoogleApiClient mGoogleApiClient;
+    private boolean mHasSetInitialCameraPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +105,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         mRightBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_right);
 
         // init map
+        mHasSetInitialCameraPosition = false;
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -116,6 +124,8 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         mBloopHandler = new Handler();
 
         setSupportActionBar(mToolbar);
+
+        mGoogleApiClient = BloopApplication.getInstance().getClient();
     }
 
     private void captureFlag() {
@@ -134,6 +144,8 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                         Log.e(TAG, response.message());
                     }
                     mBigButtonView.hide();
+
+                    Games.Leaderboards.submitScore(mGoogleApiClient, LEADERBOARD_ID, 1);
                 }
 
                 @Override
@@ -268,7 +280,16 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                     location.getLongitude()
             );
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, DEFAULT_ZOOM_LEVEL));
+            if (mHasSetInitialCameraPosition) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, DEFAULT_ZOOM_LEVEL));
+            } else {
+                // jump right to the first position.
+                mHasSetInitialCameraPosition = true;
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, DEFAULT_ZOOM_LEVEL));
+
+                // TODO: reveal map after this?
+            }
+
         }
     }
 
@@ -406,7 +427,8 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.item_leaderboard:
-
+                startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
+                        LEADERBOARD_ID), REQUEST_LEADERBOARD);
                 return true;
             case R.id.item_sign_out:
 
