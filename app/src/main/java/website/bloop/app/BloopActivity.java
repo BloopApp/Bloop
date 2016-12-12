@@ -7,6 +7,8 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +16,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
@@ -71,10 +75,13 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private double mBloopFrequency;
     private Handler mBloopHandler;
 
-    @BindView(R.id.button_place_flag)
-    FloatingActionButton mButtonPlaceFlag;
+    @BindView(R.id.activity_bloop_parent_view)
+    RelativeLayout mParentView;
 
-    @BindView(R.id.toolbar)
+    @BindView(R.id.button_place_flag)
+    FloatingActionButton mPlaceFlagButton;
+
+    @BindView(R.id.main_toolbar)
     Toolbar mToolbar;
 
     @BindView(R.id.sonar_view)
@@ -90,6 +97,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private String mNearbyFlagOwner;
 
     private GoogleApiClient mGoogleApiClient;
+    private boolean mAreControlsVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,9 +106,13 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
         ButterKnife.bind(this);
 
-        mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
+        mPlaceFlagButton.setOnClickListener(view -> placeFlag());
 
         mBigButtonView.setOnClickListener(view -> captureFlag());
+
+        // show hide controls
+        mAreControlsVisible = true;
+        mParentView.setOnClickListener(view -> showHideControls());
 
         // init bootprints
         //TODO better data structure for this
@@ -131,6 +143,27 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         setSupportActionBar(mToolbar);
 
         mGoogleApiClient = BloopApplication.getInstance().getClient();
+    }
+
+    private void showHideControls() {
+        if (mAreControlsVisible) {
+            mToolbar
+                    .animate()
+                    .y(-mToolbar.getHeight())
+                    .setDuration(250)
+                    .setInterpolator(PathInterpolatorCompat.create(0.4f, 0.0f, 0.6f, 1f))
+                    .start();
+            mAreControlsVisible = false;
+        } else {
+            mToolbar
+                    .animate()
+                    .y(0)
+                    .setDuration(250)
+                    .setInterpolator(new LinearOutSlowInInterpolator())
+                    .start();
+
+            mAreControlsVisible = true;
+        }
     }
 
     private void captureFlag() {
@@ -168,6 +201,9 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                     mBigButtonView.hide();
                 }
             });
+        } else {
+            showHideControls(); // easier than passing it through for some reason
+            //TODO: figure out how to actually pass the click event up the chain.
         }
     }
 
@@ -430,6 +466,9 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
         // we don't want this to be fixed.
         mMap.getUiSettings().setAllGesturesEnabled(false);
+        mMap.setOnMapClickListener(latLng -> {
+           showHideControls();
+        });
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -32,6 +32,9 @@ public class BigButtonView extends View {
 
     public void initialize() {
         mRadiusCoef = 0f;
+        setVisibility(INVISIBLE);
+        setClickable(false);
+        setFocusable(false);
 
         mButtonPrimary = new Paint();
         mButtonPrimary.setColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
@@ -90,6 +93,10 @@ public class BigButtonView extends View {
     }
 
     public void show() {
+        setVisibility(VISIBLE);
+        setClickable(true);
+        setFocusable(true);
+
         final BigButtonAnimation animation = new BigButtonAnimation(this, true);
         animation.setInterpolator(new OvershootInterpolator());
         animation.setDuration(250);
@@ -101,6 +108,24 @@ public class BigButtonView extends View {
         final BigButtonAnimation animation = new BigButtonAnimation(this, false);
         animation.setInterpolator(new AccelerateDecelerateInterpolator());
         animation.setDuration(250);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                setVisibility(INVISIBLE);
+                setClickable(false);
+                setFocusable(false);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
 
         setAnimation(animation);
     }
