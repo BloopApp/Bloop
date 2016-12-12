@@ -5,10 +5,13 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,7 +41,7 @@ import retrofit2.Response;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
 
-public class BloopActivity extends FragmentActivity implements OnMapReadyCallback {
+public class BloopActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "BloopActivity";
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final float DEFAULT_ZOOM_LEVEL = 18f;
@@ -57,11 +60,11 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private double mBloopFrequency;
     private Handler mBloopHandler;
 
-    @BindView(R.id.button_settings)
-    Button mButtonSettings;
-
     @BindView(R.id.button_place_flag)
-    Button mButtonPlaceFlag;
+    FloatingActionButton mButtonPlaceFlag;
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
     @BindView(R.id.sonar_view)
     SonarView mSonarView;
@@ -69,16 +72,12 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
 
-    private SettingsFragment mSettingFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bloop);
 
         ButterKnife.bind(this);
-
-        mButtonSettings.setOnClickListener(view -> showSettings());
 
         mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
 
@@ -107,8 +106,7 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         // init blooping
         mBloopHandler = new Handler();
 
-        // init settings
-        mSettingFragment = new SettingsFragment();
+        setSupportActionBar(mToolbar);
     }
 
     /**
@@ -352,16 +350,25 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         mMap.getUiSettings().setAllGesturesEnabled(false);
     }
 
-    // TODO not complete yet
-    private void showSettings() {
-        if (!mSettingFragment.isAdded()) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.settings_fragment, mSettingFragment);
-            transaction.addToBackStack("tag").commit();
-        } else {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.remove(mSettingFragment);
-            transaction.commit();
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.bloop_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.item_leaderboard:
+
+                return true;
+            case R.id.item_sign_out:
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }
