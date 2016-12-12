@@ -5,10 +5,13 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,13 +35,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
 
-public class BloopActivity extends FragmentActivity implements OnMapReadyCallback {
+public class BloopActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "BloopActivity";
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final float DEFAULT_ZOOM_LEVEL = 18f;
@@ -57,19 +61,21 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private double mBloopFrequency;
     private Handler mBloopHandler;
 
-    @BindView(R.id.button_settings)
-    Button mButtonSettings;
-
     @BindView(R.id.button_place_flag)
-    Button mButtonPlaceFlag;
+    FloatingActionButton mButtonPlaceFlag;
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
     @BindView(R.id.sonar_view)
     SonarView mSonarView;
 
+    @BindView(R.id.big_button_view)
+    BigButtonView mBigButtonView;
+
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
-
-    private SettingsFragment mSettingFragment;
+    private long mNearbyFlagId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +84,9 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
 
         ButterKnife.bind(this);
 
-        mButtonSettings.setOnClickListener(view -> showSettings());
-
         mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
+
+        mBigButtonView.setOnClickListener(view -> captureFlag());
 
         // init bootprints
         //TODO better data structure for this
@@ -107,8 +113,33 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         // init blooping
         mBloopHandler = new Handler();
 
-        // init settings
-        mSettingFragment = new SettingsFragment();
+        setSupportActionBar(mToolbar);
+    }
+
+    private void captureFlag() {
+        if (mNearbyFlagId != 0) {
+            BloopApplication application = BloopApplication.getInstance();
+            final Call<ResponseBody> call = application.getService().captureFlag(
+                    new NearbyFlag(mNearbyFlagId, BloopApplication.getInstance().getPlayerId())
+            );
+
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.code() >= 200 && response.code() < 400) {
+
+                    } else {
+                        Log.e(TAG, response.message());
+                    }
+                    mBigButtonView.hide();
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    mBigButtonView.hide();
+                }
+            });
+        }
     }
 
     /**
@@ -252,7 +283,10 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
     private void updateBloopFrequency() {
         BloopApplication application = BloopApplication.getInstance();
         if (mCurrentLocation != null) {
-            Call<NearbyFlag> call = application.getService().getNearestFlag(new PlayerLocation(application.getPlayerId(), mCurrentLocation));
+            Call<NearbyFlag> call = application.getService().getNearestFlag(
+                            new PlayerLocation(application.getPlayerId(), mCurrentLocation)
+            );
+
             call.enqueue(new Callback<NearbyFlag>() {
                 @Override
                 public void onResponse(Call<NearbyFlag> call, Response<NearbyFlag> response) {
@@ -264,6 +298,12 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
                             // if player name is present, that means that there is a flag a
                             // capturable distance away
                             // TODO: alert the user that they can capture this flag
+                            mNearbyFlagId = response.body().getFlagId();
+
+                            mBigButtonView.show();
+                        } else {
+                            mNearbyFlagId = 0; // this is the "null" value of the flag id
+                            mBigButtonView.hide();
                         }
 
                         rescheduleBloops();
@@ -352,16 +392,25 @@ public class BloopActivity extends FragmentActivity implements OnMapReadyCallbac
         mMap.getUiSettings().setAllGesturesEnabled(false);
     }
 
-    // TODO not complete yet
-    private void showSettings() {
-        if (!mSettingFragment.isAdded()) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.settings_fragment, mSettingFragment);
-            transaction.addToBackStack("tag").commit();
-        } else {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.remove(mSettingFragment);
-            transaction.commit();
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.bloop_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.item_leaderboard:
+
+                return true;
+            case R.id.item_sign_out:
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

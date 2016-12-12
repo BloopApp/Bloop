@@ -7,6 +7,6 @@
     <color name="colorSecondaryText">#757575</color>
     <color name="colorDivider">#BDBDBD</color>
     <color name="colorText">#FFFFFF</color>
-    <color name="colorAccent">#FF5252</color>
+    <color name="colorAccent">#ff5252</color>
     <color name="colorSonar">#009688</color>
 </resources>
