@@ -1,11 +1,13 @@
 package website.bloop.app;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -63,6 +65,8 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private List<GroundOverlay> mBootprintLocations;
     private Location mCurrentLocation;
     private RxLocation mRxLocation;
+    private boolean mHasSetInitialCameraPosition;
+    private Disposable mLocationDisposable;
 
     private double mBloopFrequency;
     private Handler mBloopHandler;
@@ -81,10 +85,11 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
+
     private long mNearbyFlagId;
-    private Disposable mLocationDisposable;
+    private String mNearbyFlagOwner;
+
     private GoogleApiClient mGoogleApiClient;
-    private boolean mHasSetInitialCameraPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,17 +140,27 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                     new NearbyFlag(mNearbyFlagId, BloopApplication.getInstance().getPlayerId())
             );
 
+            String requestedFlagOwner = mNearbyFlagOwner;
+
+            Activity self = this;
+
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.code() >= 200 && response.code() < 400) {
-
+                        // flag capture success!
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(self);
+                        builder
+                                .setTitle(String.format(getString(R.string.you_captured_x_flag_format_string), requestedFlagOwner))
+                                .setMessage("Add one more to that collection")
+                                .setNeutralButton(
+                                        getString(R.string.dismiss_capture_flag_dialog_text),
+                                        (dialogInterface, i) -> dialogInterface.dismiss())
+                                .show();
                     } else {
                         Log.e(TAG, response.message());
                     }
                     mBigButtonView.hide();
-
-                    Games.Leaderboards.submitScore(mGoogleApiClient, LEADERBOARD_ID, 1);
                 }
 
                 @Override
@@ -322,10 +337,12 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                             // capturable distance away
                             // TODO: alert the user that they can capture this flag
                             mNearbyFlagId = response.body().getFlagId();
+                            mNearbyFlagOwner = response.body().getPlayerName();
 
                             mBigButtonView.show();
                         } else {
                             mNearbyFlagId = 0; // this is the "null" value of the flag id
+                            mNearbyFlagOwner = null;
                             mBigButtonView.hide();
                         }
 
@@ -430,9 +447,11 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                 startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
                         LEADERBOARD_ID), REQUEST_LEADERBOARD);
                 return true;
-            case R.id.item_sign_out:
-
+            case R.id.item_about_libs:
+                startAboutLibraries();
                 return true;
+
+
             default:
                 return super.onOptionsItemSelected(item);
         }
