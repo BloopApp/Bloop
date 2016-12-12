@@ -52,6 +52,7 @@
         android:layout_marginBottom="16dp"
         android:id="@+id/button_place_flag"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_bloop_flag_placed_icon" />
 
 </RelativeLayout>
