@@ -5,7 +5,7 @@ package website.bloop.app.api;
  */
 
 public interface APIPath {
-    String BASE_PATH = "http://bloop-api.wolfd.io:8081/api/"; //TODO: change this to something that isn't an internal IP
+    String BASE_PATH = "https://bloop-api.wolfd.io/api/"; //TODO: change this to something that isn't an internal IP
     String PLACE_FLAG = "flag/place";
     String CHECK_NEARBY = "flag/nearby";
     String CAPTURE_FLAG = "flag/capture";
