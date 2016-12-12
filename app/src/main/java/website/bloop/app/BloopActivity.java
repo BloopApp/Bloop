@@ -35,6 +35,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,6 +77,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
     private long mNearbyFlagId;
+    private Disposable mLocationDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,7 +173,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
         // this should never be called if the permission hasn't been granted.
         //noinspection MissingPermission
-        mRxLocation.location().updates(locationRequest)
+        mLocationDisposable = mRxLocation.location().updates(locationRequest)
                 //TODO: we might want to clean this data before passing it on
                 .doOnEach(location -> mCurrentLocation = location.getValue())
                 .doOnEach(location -> updateMapCenter(location.getValue()))
@@ -411,6 +413,24 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mLocationDisposable != null && !mLocationDisposable.isDisposed()) {
+            mLocationDisposable.dispose();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mLocationDisposable == null || mLocationDisposable.isDisposed()) {
+            startTrackingLocation();
         }
     }
 }

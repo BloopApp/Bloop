@@ -22,8 +22,6 @@ public class BigButtonView extends View {
 
     public BigButtonView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-
         initialize();
     }
 
@@ -127,6 +125,7 @@ public class BigButtonView extends View {
 
         @Override
         protected void applyTransformation(float interpolatedTime, Transformation t) {
+            // linear interpolate from small to large
             mBigButtonView.setRadiusCoef(
                     (float) ((1.0 - interpolatedTime) * mStartPoint + interpolatedTime * mEndPoint)
             );
