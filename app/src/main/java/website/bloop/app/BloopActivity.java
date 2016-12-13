@@ -153,15 +153,16 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
             mToolbar
                     .animate()
                     .y(-mToolbar.getHeight())
-                    .setDuration(250)
+                    .setDuration(150)
                     .setInterpolator(PathInterpolatorCompat.create(0.4f, 0.0f, 0.6f, 1f))
                     .start();
+
             mAreControlsVisible = false;
         } else {
             mToolbar
                     .animate()
                     .y(0)
-                    .setDuration(250)
+                    .setDuration(150)
                     .setInterpolator(new LinearOutSlowInInterpolator())
                     .start();
 
@@ -444,7 +445,6 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private void bloop() {
         mSonarView.bloop();
-        //TODO: play sound
         mBloopSoundPlayer.boop();
 
         mLastBloopTime = System.currentTimeMillis();
@@ -472,9 +472,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
         // we don't want this to be fixed.
         mMap.getUiSettings().setAllGesturesEnabled(false);
-        mMap.setOnMapClickListener(latLng -> {
-           showHideControls();
-        });
+        mMap.setOnMapClickListener(latLng -> showHideControls());
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -509,6 +507,9 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         if (mLocationDisposable != null && !mLocationDisposable.isDisposed()) {
             mLocationDisposable.dispose();
         }
+
+        mBloopFrequency = 0;
+        rescheduleBloops();
     }
 
     @Override
