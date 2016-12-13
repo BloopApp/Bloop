@@ -21,21 +21,21 @@ public class TutorialActivity extends AppIntro {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // first content: change flag
-        addSlide(AppIntroFragment.newInstance("Create your flag",
-                "To get started, customize your flag to your liking. Remember, others will see this!",
+        // second content: drop flag
+        addSlide(AppIntroFragment.newInstance("Place your first flag",
+                "Jump into playing by dropping your flag. Finding a secluded spot is key!",
                 R.drawable.landscape,
                 ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
 
-        // second content: drop flag
-        addSlide(AppIntroFragment.newInstance("Drop your flag",
-                "Jump into playing by dropping your flag. Finding a secluded spot is key!",
+        // first content: change flag
+        addSlide(AppIntroFragment.newInstance("Create your flag",
+                "When you place your flag, you get a chance to customize it. Remember, others will see this!",
                 R.drawable.landscape,
                 ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
 
         // third content: capture flag
         addSlide(AppIntroFragment.newInstance("Find and capture flags",
-                "Now go on the offensive! Follow the Bloops to find other players' flags. Happy hunting!",
+                "Now go on the offensive! Follow the \"bloop\" sounds to find other players' flags. The more often you see the bloops, the closer you are. Happy hunting!",
                 R.drawable.landscape,
                 ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
     }
@@ -44,37 +44,38 @@ public class TutorialActivity extends AppIntro {
     public void onSkipPressed(Fragment currentFragment) {
         super.onSkipPressed(currentFragment);
 
-        // set the pref to skip this activity now
-        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = pref.edit();
-        ed.putBoolean("activity_executed", true);
-        ed.apply();
+        saveTutorialDone();
 
-        Intent newIntent = new Intent(getBaseContext(), PlayLoginActivity.class);
-        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(newIntent);
-        finish();
+        leaveTutorial();
     }
 
     @Override
     public void onDonePressed(Fragment currentFragment) {
         super.onDonePressed(currentFragment);
 
-        // set the pref to skip this activity now
-        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = pref.edit();
-        ed.putBoolean("activity_executed", true);
-        ed.apply();
+        saveTutorialDone();
 
-        Intent newIntent = new Intent(getBaseContext(), PlayLoginActivity.class);
-        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(newIntent);
-        finish();
+        leaveTutorial();
     }
 
     // don't do anything special on slide change
     @Override
     public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
         super.onSlideChanged(oldFragment, newFragment);
+    }
+
+    private void saveTutorialDone() {
+        // set the pref to skip this activity now
+        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean("activity_executed", true);
+        ed.apply();
+    }
+
+    private void leaveTutorial() {
+        Intent newIntent = new Intent(getBaseContext(), PlayLoginActivity.class);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(newIntent);
+        finish();
     }
 }
