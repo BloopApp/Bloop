@@ -11,6 +11,7 @@ import website.bloop.app.api.BloopAPIService;
  */
 public class BloopApplication extends Application {
     private static BloopApplication mInstance = null;
+    public static final String BLOOP_PREFERENCE_FILE = "BloopPrefs";
 
     private GoogleApiClient mGoogleApiClient;
     private BloopAPIService mService;

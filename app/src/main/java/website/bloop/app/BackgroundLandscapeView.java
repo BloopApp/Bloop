@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -33,8 +35,8 @@ public class BackgroundLandscapeView extends View {
     private void initialize() {
         mLandscapeBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.landscape);
 
-        mBackgroundColor = Color.parseColor("#38A4DD");
-        mSunColor = Color.parseColor("#FEEA39");
+        mBackgroundColor = ContextCompat.getColor(getContext(), R.color.colorSky);
+        mSunColor = ContextCompat.getColor(getContext(), R.color.colorSun);
     }
 
     @Override

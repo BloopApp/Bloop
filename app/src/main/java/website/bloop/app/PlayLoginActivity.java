@@ -61,6 +61,12 @@ public class PlayLoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_login);
 
+        if (!TutorialActivity.hasTutorialRun(this)) {
+            Intent intent = new Intent(this, TutorialActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         ButterKnife.bind(this);
 
         // create the Google Api Client with access to the Play Games services

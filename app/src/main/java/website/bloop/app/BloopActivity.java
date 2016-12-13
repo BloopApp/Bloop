@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -59,7 +58,6 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final float BOOTPRINT_SIZE_METERS = 10;
     private static final int MAX_BOOTPRINTS = 50;
 
-    private static final String LEADERBOARD_ID = "FlagCaptures";
     private static final int REQUEST_LEADERBOARD = 1000;
 
     private BitmapDescriptor mLeftBootprint;
@@ -154,15 +152,16 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
             mToolbar
                     .animate()
                     .y(-mToolbar.getHeight())
-                    .setDuration(250)
+                    .setDuration(150)
                     .setInterpolator(PathInterpolatorCompat.create(0.4f, 0.0f, 0.6f, 1f))
                     .start();
+
             mAreControlsVisible = false;
         } else {
             mToolbar
                     .animate()
                     .y(0)
-                    .setDuration(250)
+                    .setDuration(150)
                     .setInterpolator(new LinearOutSlowInInterpolator())
                     .start();
 
@@ -445,7 +444,6 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private void bloop() {
         mSonarView.bloop();
-        //TODO: play sound
         mBloopSoundPlayer.boop();
 
         mLastBloopTime = System.currentTimeMillis();
@@ -473,9 +471,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
         // we don't want this to be fixed.
         mMap.getUiSettings().setAllGesturesEnabled(false);
-        mMap.setOnMapClickListener(latLng -> {
-           showHideControls();
-        });
+        mMap.setOnMapClickListener(latLng -> showHideControls());
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -490,8 +486,13 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.item_leaderboard:
-                startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
-                        LEADERBOARD_ID), REQUEST_LEADERBOARD);
+                startActivityForResult(
+                        Games.Leaderboards.getLeaderboardIntent(
+                                mGoogleApiClient,
+                                getString(R.string.leaderboard_bloop_high_scores)
+                        ),
+                        REQUEST_LEADERBOARD
+                );
                 return true;
             case R.id.item_about_libs:
                 startAboutLibraries();
@@ -510,6 +511,9 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         if (mLocationDisposable != null && !mLocationDisposable.isDisposed()) {
             mLocationDisposable.dispose();
         }
+
+        mBloopFrequency = 0;
+        rescheduleBloops();
     }
 
     @Override
