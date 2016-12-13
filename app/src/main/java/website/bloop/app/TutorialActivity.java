@@ -28,20 +28,20 @@ public class TutorialActivity extends AppIntro {
         // second content: drop flag
         addSlide(AppIntroFragment.newInstance("Place your first flag",
                 "Jump into playing by dropping your flag. Finding a secluded spot is key!",
-                R.drawable.landscape,
+                R.drawable.ic_bloop_flag_placed_icon,
                 ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
 
         // first content: change flag
         addSlide(AppIntroFragment.newInstance("Create your flag",
                 "When you place your flag, you get a chance to customize it. Remember, others will see this!",
                 R.drawable.landscape,
-                ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
+                ContextCompat.getColor(getApplicationContext(), R.color.colorSky)));
 
         // third content: capture flag
         addSlide(AppIntroFragment.newInstance("Find and capture flags",
                 "Now go on the offensive! Follow the \"bloop\" sounds to find other players' flags. The more often you see the bloops, the closer you are. Happy hunting!",
                 R.drawable.landscape,
-                ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
+                ContextCompat.getColor(getApplicationContext(), R.color.colorSky)));
     }
 
     @Override
