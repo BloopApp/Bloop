@@ -3,6 +3,6 @@
 
     <item android:title="Leaderboard"
         android:id="@+id/item_leaderboard" />
-    <item android:title="Sign out"
-        android:id="@+id/item_sign_out" />
+    <item android:title="About libraries"
+        android:id="@+id/item_about_libs" />
 </menu>

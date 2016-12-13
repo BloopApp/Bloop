@@ -1,18 +1,26 @@
 package website.bloop.app;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import android.support.v4.view.animation.PathInterpolatorCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,6 +43,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,6 +59,9 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final float BOOTPRINT_SIZE_METERS = 10;
     private static final int MAX_BOOTPRINTS = 50;
 
+    private static final String LEADERBOARD_ID = "FlagCaptures";
+    private static final int REQUEST_LEADERBOARD = 1000;
+
     private BitmapDescriptor mLeftBootprint;
     private BitmapDescriptor mRightBootprint;
     private GoogleMap mMap;
@@ -57,14 +69,19 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private List<GroundOverlay> mBootprintLocations;
     private Location mCurrentLocation;
     private RxLocation mRxLocation;
+    private boolean mHasSetInitialCameraPosition;
+    private Disposable mLocationDisposable;
 
     private double mBloopFrequency;
     private Handler mBloopHandler;
 
-    @BindView(R.id.button_place_flag)
-    FloatingActionButton mButtonPlaceFlag;
+    @BindView(R.id.activity_bloop_parent_view)
+    RelativeLayout mParentView;
 
-    @BindView(R.id.toolbar)
+    @BindView(R.id.button_place_flag)
+    FloatingActionButton mPlaceFlagButton;
+
+    @BindView(R.id.main_toolbar)
     Toolbar mToolbar;
 
     @BindView(R.id.sonar_view)
@@ -75,7 +92,12 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
+
     private long mNearbyFlagId;
+    private String mNearbyFlagOwner;
+
+    private GoogleApiClient mGoogleApiClient;
+    private boolean mAreControlsVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +106,13 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
         ButterKnife.bind(this);
 
-        mButtonPlaceFlag.setOnClickListener(view -> placeFlag());
+        mPlaceFlagButton.setOnClickListener(view -> placeFlag());
 
         mBigButtonView.setOnClickListener(view -> captureFlag());
+
+        // show hide controls
+        mAreControlsVisible = true;
+        mParentView.setOnClickListener(view -> showHideControls());
 
         // init bootprints
         //TODO better data structure for this
@@ -96,6 +122,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         mRightBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_right);
 
         // init map
+        mHasSetInitialCameraPosition = false;
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -114,6 +141,29 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         mBloopHandler = new Handler();
 
         setSupportActionBar(mToolbar);
+
+        mGoogleApiClient = BloopApplication.getInstance().getClient();
+    }
+
+    private void showHideControls() {
+        if (mAreControlsVisible) {
+            mToolbar
+                    .animate()
+                    .y(-mToolbar.getHeight())
+                    .setDuration(250)
+                    .setInterpolator(PathInterpolatorCompat.create(0.4f, 0.0f, 0.6f, 1f))
+                    .start();
+            mAreControlsVisible = false;
+        } else {
+            mToolbar
+                    .animate()
+                    .y(0)
+                    .setDuration(250)
+                    .setInterpolator(new LinearOutSlowInInterpolator())
+                    .start();
+
+            mAreControlsVisible = true;
+        }
     }
 
     private void captureFlag() {
@@ -123,11 +173,23 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                     new NearbyFlag(mNearbyFlagId, BloopApplication.getInstance().getPlayerId())
             );
 
+            String requestedFlagOwner = mNearbyFlagOwner;
+
+            Activity self = this;
+
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.code() >= 200 && response.code() < 400) {
-
+                        // flag capture success!
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(self);
+                        builder
+                                .setTitle(String.format(getString(R.string.you_captured_x_flag_format_string), requestedFlagOwner))
+                                .setMessage("Add one more to that collection")
+                                .setNeutralButton(
+                                        getString(R.string.dismiss_capture_flag_dialog_text),
+                                        (dialogInterface, i) -> dialogInterface.dismiss())
+                                .show();
                     } else {
                         Log.e(TAG, response.message());
                     }
@@ -139,6 +201,9 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                     mBigButtonView.hide();
                 }
             });
+        } else {
+            showHideControls(); // easier than passing it through for some reason
+            //TODO: figure out how to actually pass the click event up the chain.
         }
     }
 
@@ -171,7 +236,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
         // this should never be called if the permission hasn't been granted.
         //noinspection MissingPermission
-        mRxLocation.location().updates(locationRequest)
+        mLocationDisposable = mRxLocation.location().updates(locationRequest)
                 //TODO: we might want to clean this data before passing it on
                 .doOnEach(location -> mCurrentLocation = location.getValue())
                 .doOnEach(location -> updateMapCenter(location.getValue()))
@@ -266,7 +331,16 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                     location.getLongitude()
             );
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, DEFAULT_ZOOM_LEVEL));
+            if (mHasSetInitialCameraPosition) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, DEFAULT_ZOOM_LEVEL));
+            } else {
+                // jump right to the first position.
+                mHasSetInitialCameraPosition = true;
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, DEFAULT_ZOOM_LEVEL));
+
+                // TODO: reveal map after this?
+            }
+
         }
     }
 
@@ -299,10 +373,12 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                             // capturable distance away
                             // TODO: alert the user that they can capture this flag
                             mNearbyFlagId = response.body().getFlagId();
+                            mNearbyFlagOwner = response.body().getPlayerName();
 
                             mBigButtonView.show();
                         } else {
                             mNearbyFlagId = 0; // this is the "null" value of the flag id
+                            mNearbyFlagOwner = null;
                             mBigButtonView.hide();
                         }
 
@@ -390,6 +466,9 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
         // we don't want this to be fixed.
         mMap.getUiSettings().setAllGesturesEnabled(false);
+        mMap.setOnMapClickListener(latLng -> {
+           showHideControls();
+        });
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -404,13 +483,34 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.item_leaderboard:
-
+                startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
+                        LEADERBOARD_ID), REQUEST_LEADERBOARD);
                 return true;
-            case R.id.item_sign_out:
-
+            case R.id.item_about_libs:
+                startAboutLibraries();
                 return true;
+
+
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mLocationDisposable != null && !mLocationDisposable.isDisposed()) {
+            mLocationDisposable.dispose();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mLocationDisposable == null || mLocationDisposable.isDisposed()) {
+            startTrackingLocation();
         }
     }
 }

@@ -1,57 +1,60 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_bloop_parent_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
         tools:context="website.bloop.app.BloopActivity" />
 
     <website.bloop.app.SonarView
         android:id="@+id/sonar_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
-
-    </website.bloop.app.SonarView>
+        android:clickable="false"
+        android:focusable="false" />
 
     <view
+        android:id="@+id/big_button_view"
+        class="website.bloop.app.BigButtonView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        class="website.bloop.app.BigButtonView"
-        android:id="@+id/big_button_view"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_margin="32dp" />
 
     <android.support.v7.widget.Toolbar
+        android:id="@+id/main_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:theme="?attr/actionBarTheme"
-        android:minHeight="?attr/actionBarSize"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/toolbar"
-        android:alpha="0.7" />
+        android:layout_alignParentTop="true"
+        android:alpha="0.7"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/button_place_flag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        app:fabSize="normal"
-        app:srcCompat="@color/colorAccent"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:id="@+id/button_place_flag"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:src="@drawable/ic_bloop_flag_placed_icon"
+        app:fabSize="normal"
+        app:srcCompat="@color/colorAccent" />
 
 </RelativeLayout>
