@@ -13,7 +13,7 @@ public class BloopSoundPlayer {
     private final int mBoop;
     private final int mBloop;
 
-    private static final int MAX_AUDIO_STREAMS = 6;
+    private static final int MAX_AUDIO_STREAMS = 12;
     private static final float VOLUME = 1f;
     private static final int PRIORITY = 1;
     private static final int REPEATS = 0;
