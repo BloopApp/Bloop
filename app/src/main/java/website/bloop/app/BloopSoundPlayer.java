@@ -13,6 +13,7 @@ public class BloopSoundPlayer {
     private final int mBoop;
     private final int mBloop;
 
+    private static final int MAX_AUDIO_STREAMS = 6;
     private static final float VOLUME = 1f;
     private static final int PRIORITY = 1;
     private static final int REPEATS = 0;
@@ -28,11 +29,11 @@ public class BloopSoundPlayer {
                     .build();
 
             mSoundPool = new SoundPool.Builder()
-                    .setMaxStreams(6)
+                    .setMaxStreams(MAX_AUDIO_STREAMS)
                     .setAudioAttributes(soundAttributes)
                     .build();
         } else {
-            mSoundPool = new SoundPool(6, AudioManager.STREAM_MUSIC, 100);
+            mSoundPool = new SoundPool(MAX_AUDIO_STREAMS, AudioManager.STREAM_MUSIC, 100);
         }
 
         mBoop = mSoundPool.load(mContext, R.raw.boop, 1);
