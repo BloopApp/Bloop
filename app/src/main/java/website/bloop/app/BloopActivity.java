@@ -98,6 +98,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
 
     private GoogleApiClient mGoogleApiClient;
     private boolean mAreControlsVisible;
+    private BloopSoundPlayer mBloopSoundPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +144,9 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         setSupportActionBar(mToolbar);
 
         mGoogleApiClient = BloopApplication.getInstance().getClient();
+
+        // init sounds
+        mBloopSoundPlayer = new BloopSoundPlayer(this);
     }
 
     private void showHideControls() {
@@ -182,6 +186,8 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.code() >= 200 && response.code() < 400) {
                         // flag capture success!
+                        mBloopSoundPlayer.bloop();
+
                         final AlertDialog.Builder builder = new AlertDialog.Builder(self);
                         builder
                                 .setTitle(String.format(getString(R.string.you_captured_x_flag_format_string), requestedFlagOwner))
@@ -440,6 +446,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
     private void bloop() {
         mSonarView.bloop();
         //TODO: play sound
+        mBloopSoundPlayer.boop();
 
         mLastBloopTime = System.currentTimeMillis();
     }
