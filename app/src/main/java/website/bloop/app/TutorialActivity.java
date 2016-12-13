@@ -11,12 +11,16 @@ import android.support.v4.content.ContextCompat;
 import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 
+import static website.bloop.app.BloopApplication.BLOOP_PREFERENCE_FILE;
+
 /**
  * Activity for displaying a tutorial on first run after login to Play Games.
  * Library from: https://github.com/PaoloRotolo/AppIntro
  * First launch logic: http://stackoverflow.com/questions/16419627/making-an-activity-appear-only-once-when-the-app-is-started
  */
 public class TutorialActivity extends AppIntro {
+    private static final String PREF_TUTORIAL_RUN = "tutorial_run";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,9 +70,9 @@ public class TutorialActivity extends AppIntro {
 
     private void saveTutorialDone() {
         // set the pref to skip this activity now
-        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences(BLOOP_PREFERENCE_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = pref.edit();
-        ed.putBoolean("activity_executed", true);
+        ed.putBoolean(PREF_TUTORIAL_RUN, true);
         ed.apply();
     }
 
@@ -77,5 +81,10 @@ public class TutorialActivity extends AppIntro {
         newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(newIntent);
         finish();
+    }
+
+    public static boolean hasTutorialRun(Context context) {
+        SharedPreferences activityPref = context.getSharedPreferences(BLOOP_PREFERENCE_FILE, Context.MODE_PRIVATE);
+        return activityPref.getBoolean(PREF_TUTORIAL_RUN, false);
     }
 }

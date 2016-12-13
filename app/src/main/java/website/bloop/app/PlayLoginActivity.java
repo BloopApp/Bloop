@@ -61,10 +61,7 @@ public class PlayLoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_login);
 
-        SharedPreferences activityPref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
-        boolean previouslyStarted = activityPref.getBoolean("activity_executed", false);
-
-        if (true || !previouslyStarted) {
+        if (!TutorialActivity.hasTutorialRun(this)) {
             Intent intent = new Intent(this, TutorialActivity.class);
             startActivity(intent);
             finish();

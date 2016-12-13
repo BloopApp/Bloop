@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.api.GoogleApiClient;
