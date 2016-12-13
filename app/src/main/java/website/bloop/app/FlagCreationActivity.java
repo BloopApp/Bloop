@@ -144,7 +144,7 @@ public class FlagCreationActivity extends AppCompatActivity {
         int currentBackgroundColor = mFlagColor;
         ColorPickerDialogBuilder
                 .with(this)
-                .setTitle("Choose flag color")
+                .setTitle(getString(R.string.choose_flag_color))
                 .initialColor(currentBackgroundColor)
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                 .density(12)

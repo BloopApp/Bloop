@@ -10,4 +10,5 @@
     <string name="on_flag_placement_fail">Flag placement failed, Sorry!</string>
     <string name="dismiss_capture_flag_dialog_text">Ok</string>
     <string name="you_captured_x_flag_format_string">You captured %s\'s flag!</string>
+    <string name="choose_flag_color">Choose flag color</string>
 </resources>
