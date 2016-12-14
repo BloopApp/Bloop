@@ -3,7 +3,11 @@ package website.bloop.app;
 import android.app.Application;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
+import website.bloop.app.api.APIPath;
 import website.bloop.app.api.BloopAPIService;
 
 /**
@@ -33,11 +37,11 @@ public class BloopApplication extends Application {
         return mInstance;
     }
 
-    public GoogleApiClient getClient() {
+    public GoogleApiClient getGoogleApiClient() {
         return mGoogleApiClient;
     }
 
-    public void setClient(GoogleApiClient client) {
+    public void setGoogleApiClient(GoogleApiClient client) {
         mGoogleApiClient = client;
     }
 
@@ -58,10 +62,14 @@ public class BloopApplication extends Application {
     }
 
     public BloopAPIService getService() {
+        if (mService == null) {
+            mService = new Retrofit.Builder()
+                    .baseUrl(APIPath.BASE_PATH)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(JacksonConverterFactory.create())
+                    .build()
+                    .create(BloopAPIService.class);
+        }
         return mService;
-    }
-
-    public void setService(BloopAPIService service) {
-        mService = service;
     }
 }

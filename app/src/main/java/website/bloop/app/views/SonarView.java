@@ -1,4 +1,4 @@
-package website.bloop.app;
+package website.bloop.app.views;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -16,6 +16,8 @@ import android.view.animation.Transformation;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
+
+import website.bloop.app.R;
 
 public class SonarView extends RelativeLayout {
     private static final String TAG = "SonarView";
