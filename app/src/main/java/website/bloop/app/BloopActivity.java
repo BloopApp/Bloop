@@ -366,6 +366,8 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
                             new PlayerLocation(application.getPlayerId(), mCurrentLocation)
             );
 
+
+
             call.enqueue(new Callback<NearbyFlag>() {
                 @Override
                 public void onResponse(Call<NearbyFlag> call, Response<NearbyFlag> response) {

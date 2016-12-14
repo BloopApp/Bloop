@@ -20,6 +20,7 @@ import com.google.example.games.basegameutils.BaseGameUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.plugins.RxJavaPlugins;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
