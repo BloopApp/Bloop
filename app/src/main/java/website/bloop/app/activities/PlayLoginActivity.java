@@ -20,10 +20,8 @@ import com.google.example.games.basegameutils.BaseGameUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import website.bloop.app.BloopApplication;
 import website.bloop.app.R;
 import website.bloop.app.api.BloopAPIService;
@@ -97,27 +95,26 @@ public class PlayLoginActivity extends AppCompatActivity
         Player p = Games.Players.getCurrentPlayer(mGoogleApiClient);
         String displayName;
         String playerId;
+
         if (p == null) {
             Log.w(TAG, "mGamesClient.getCurrentPlayer() is NULL!");
             displayName = "???";
         } else {
             displayName = p.getDisplayName();
+
             playerId = Games.Players.getCurrentPlayerId(mGoogleApiClient);
+
             BloopApplication.getInstance().setPlayerName(displayName);
             BloopApplication.getInstance().setPlayerId(playerId);
+
             website.bloop.app.api.Player player = new website.bloop.app.api.Player(displayName, playerId);
-            Call<ResponseBody> call = mService.addPlayer(player);
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                }
-            });
+            // TODO: move this to another class?
+            mService.addPlayer(player)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(responseBody -> {
+                    }, throwable -> Log.e(TAG, throwable.getMessage()));
         }
 
         // hide button on login

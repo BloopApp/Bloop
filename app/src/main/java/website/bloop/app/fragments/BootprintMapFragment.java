@@ -63,7 +63,7 @@ public class BootprintMapFragment extends Fragment implements OnMapReadyCallback
         mMapView.onCreate(savedInstanceState);
 
         // init bootprints
-        //TODO better data structure for this
+        //TOmaybeDO better data structure for this
         mBootprintLocations = new ArrayList<>(MAX_BOOTPRINTS);
 
         mLeftBootprint = BitmapDescriptorFactory.fromResource(R.drawable.bootprint_left);

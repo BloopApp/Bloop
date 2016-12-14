@@ -1,5 +1,6 @@
 package website.bloop.app.api;
 
+import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -12,14 +13,14 @@ import retrofit2.http.POST;
 
 public interface BloopAPIService {
     @POST(APIPath.PLACE_FLAG)
-    Call<ResponseBody> placeFlag(@Body PlayerLocation location);
+    Observable<ResponseBody> placeFlag(@Body PlayerLocation location);
 
     @POST(APIPath.CHECK_NEARBY)
-    Call<NearbyFlag> getNearestFlag(@Body PlayerLocation location);
+    Observable<NearbyFlag> getNearestFlag(@Body PlayerLocation location);
 
     @POST(APIPath.CAPTURE_FLAG)
-    Call<ResponseBody> captureFlag(@Body NearbyFlag flag);
+    Observable<ResponseBody> captureFlag(@Body NearbyFlag flag);
 
     @POST(APIPath.ADD_PLAYER)
-    Call<ResponseBody> addPlayer(@Body Player player);
+    Observable<ResponseBody> addPlayer(@Body Player player);
 }

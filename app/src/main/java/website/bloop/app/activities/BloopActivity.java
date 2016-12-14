@@ -28,17 +28,16 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.schedulers.Schedulers;
 import website.bloop.app.BloopApplication;
-import website.bloop.app.sound.BloopSoundPlayer;
-import website.bloop.app.fragments.BootprintMapFragment;
 import website.bloop.app.R;
+import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
+import website.bloop.app.fragments.BootprintMapFragment;
+import website.bloop.app.sound.BloopSoundPlayer;
 import website.bloop.app.views.BigButtonView;
 import website.bloop.app.views.SonarView;
 
@@ -81,6 +80,8 @@ public class BloopActivity extends AppCompatActivity {
     private GoogleApiClient mGoogleApiClient;
     private boolean mAreControlsVisible;
     private BloopSoundPlayer mBloopSoundPlayer;
+    private BloopAPIService mService;
+    private BloopApplication mApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,10 +119,15 @@ public class BloopActivity extends AppCompatActivity {
 
         setSupportActionBar(mToolbar);
 
-        mGoogleApiClient = BloopApplication.getInstance().getGoogleApiClient();
-
         // init sounds
         mBloopSoundPlayer = new BloopSoundPlayer(this);
+
+        // init global references / api stuff
+        mApplication = BloopApplication.getInstance();
+
+        mGoogleApiClient = mApplication.getGoogleApiClient();
+
+        mService = mApplication.getService();
     }
 
     private void showHideControls() {
@@ -149,40 +155,30 @@ public class BloopActivity extends AppCompatActivity {
     private void captureFlag() {
         if (mNearbyFlagId != 0) {
             BloopApplication application = BloopApplication.getInstance();
-            final Call<ResponseBody> call = application.getService().captureFlag(
-                    new NearbyFlag(mNearbyFlagId, BloopApplication.getInstance().getPlayerId())
-            );
 
             String requestedFlagOwner = mNearbyFlagOwner;
 
             Activity self = this;
 
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if (response.code() >= 200 && response.code() < 400) {
+            mService.captureFlag(
+                    new NearbyFlag(mNearbyFlagId, BloopApplication.getInstance().getPlayerId()))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(responseBody -> {
                         // flag capture success!
                         mBloopSoundPlayer.bloop();
 
                         final AlertDialog.Builder builder = new AlertDialog.Builder(self);
-                        builder
-                                .setTitle(String.format(getString(R.string.you_captured_x_flag_format_string), requestedFlagOwner))
+                        builder.setTitle(String.format(getString(R.string.you_captured_x_flag_format_string), requestedFlagOwner))
                                 .setMessage("Add one more to that collection")
                                 .setNeutralButton(
                                         getString(R.string.dismiss_capture_flag_dialog_text),
                                         (dialogInterface, i) -> dialogInterface.dismiss())
                                 .show();
-                    } else {
-                        Log.e(TAG, response.message());
-                    }
-                    mBigButtonView.hide();
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    mBigButtonView.hide();
-                }
-            });
+                        mBigButtonView.hide();
+                    }, throwable -> {
+                        mBigButtonView.hide();
+                    });
         } else {
             showHideControls(); // easier than passing it through for some reason
             //TODO: figure out how to actually pass the click event up the chain.
@@ -238,27 +234,21 @@ public class BloopActivity extends AppCompatActivity {
     }
 
     private void updateBloopFrequency() {
-        BloopApplication application = BloopApplication.getInstance();
         if (mCurrentLocation != null) {
-            Call<NearbyFlag> call = application.getService().getNearestFlag(
-                            new PlayerLocation(application.getPlayerId(), mCurrentLocation)
-            );
+            mService.getNearestFlag(
+                    new PlayerLocation(mApplication.getPlayerId(), mCurrentLocation))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(nearbyFlag -> {
+                        mBloopFrequency = nearbyFlag.getBloopFrequency();
 
-
-
-            call.enqueue(new Callback<NearbyFlag>() {
-                @Override
-                public void onResponse(Call<NearbyFlag> call, Response<NearbyFlag> response) {
-                    if (response.isSuccessful()) {
-                        mBloopFrequency = response.body().getBloopFrequency();
-
-                        String playerName = response.body().getPlayerName();
+                        String playerName = nearbyFlag.getPlayerName();
                         if (playerName != null) {
                             // if player name is present, that means that there is a flag a
                             // capturable distance away
                             // TODO: alert the user that they can capture this flag
-                            mNearbyFlagId = response.body().getFlagId();
-                            mNearbyFlagOwner = response.body().getPlayerName();
+                            mNearbyFlagId = nearbyFlag.getFlagId();
+                            mNearbyFlagOwner = nearbyFlag.getPlayerName();
 
                             mBigButtonView.show();
                         } else {
@@ -268,14 +258,7 @@ public class BloopActivity extends AppCompatActivity {
                         }
 
                         rescheduleBloops();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<NearbyFlag> call, Throwable t) {
-                    Log.e(TAG, t.getMessage());
-                }
-            });
+                    }, throwable -> Log.e(TAG, throwable.getMessage()));
         }
     }
 
