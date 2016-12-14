@@ -1,4 +1,4 @@
-package website.bloop.app;
+package website.bloop.app.activities;
 
 import android.animation.Animator;
 import android.content.Intent;
@@ -22,11 +22,12 @@ import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import website.bloop.app.BloopApplication;
+import website.bloop.app.R;
 import website.bloop.app.api.PlacedFlag;
+import website.bloop.app.views.FlagView;
 
 public class FlagCreationActivity extends AppCompatActivity {
     public static final String FLAG_LOCATION = "ARG_FLAG_LOCATION";
@@ -44,7 +45,10 @@ public class FlagCreationActivity extends AppCompatActivity {
     @BindView(R.id.flag_view)
     FlagView mFlagView;
 
-    @BindView(R.id.next_button) Button mNextButton;
+    @BindView(R.id.next_button)
+    Button mNextButton;
+
+    private BloopApplication mApplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,8 @@ public class FlagCreationActivity extends AppCompatActivity {
         mFlagView.setOnClickListener(view -> this.showColorPickerDialog());
 
         mNextButton.setOnClickListener(view -> this.onClickNextButton());
+
+        mApplication = BloopApplication.getInstance();
     }
 
     private void setFlagColor(int flagColor) {
@@ -118,27 +124,21 @@ public class FlagCreationActivity extends AppCompatActivity {
     private void sendPlaceFlagRequest() {
         BloopApplication application = BloopApplication.getInstance();
         PlacedFlag newFlag = new PlacedFlag(application.getPlayerId(), mFlagLocation, mFlagColor);
-        Call<ResponseBody> call = application.getService().placeFlag(newFlag);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                //TODO: Place flag onscreen (animate)
 
-                // exit activity, we've placed the flag
-                finish();
-            }
+        mApplication.getService().placeFlag(newFlag)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(responseBody -> finish(), throwable -> {
+                    Log.e(TAG, throwable.getMessage());
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(
-                        getBaseContext(),
-                        R.string.on_flag_placement_fail,
-                        Toast.LENGTH_LONG
-                ).show();
+                    Toast.makeText(
+                            getBaseContext(),
+                            R.string.on_flag_placement_fail,
+                            Toast.LENGTH_LONG
+                    ).show();
 
-                finish();
-            }
-        });
+                    finish();
+                });
     }
 
     private void showColorPickerDialog() {

@@ -1,4 +1,4 @@
-package website.bloop.app;
+package website.bloop.app.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,8 @@ import android.support.v4.content.ContextCompat;
 
 import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
+
+import website.bloop.app.R;
 
 import static website.bloop.app.BloopApplication.BLOOP_PREFERENCE_FILE;
 

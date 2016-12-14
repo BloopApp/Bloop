@@ -1,4 +1,4 @@
-package website.bloop.app;
+package website.bloop.app.views;
 
 import android.content.Context;
 import android.graphics.Canvas;

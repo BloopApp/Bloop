@@ -1,4 +1,4 @@
-package website.bloop.app;
+package website.bloop.app.views;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,6 +10,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.View;
+
+import website.bloop.app.R;
 
 public class BackgroundLandscapeView extends View {
 
