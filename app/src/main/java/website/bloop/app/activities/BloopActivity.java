@@ -61,6 +61,7 @@ public class BloopActivity extends AppCompatActivity {
 
     @BindView(R.id.button_place_flag)
     FloatingActionButton mPlaceFlagButton;
+    private float mPlaceFlagButtonMarginBottom; // for animation
 
     @BindView(R.id.main_toolbar)
     Toolbar mToolbar;
@@ -78,7 +79,6 @@ public class BloopActivity extends AppCompatActivity {
     private String mNearbyFlagOwner;
 
     private GoogleApiClient mGoogleApiClient;
-    private boolean mAreControlsVisible;
     private BloopSoundPlayer mBloopSoundPlayer;
     private BloopAPIService mService;
     private BloopApplication mApplication;
@@ -100,10 +100,6 @@ public class BloopActivity extends AppCompatActivity {
         mPlaceFlagButton.setOnClickListener(view -> placeFlag());
 
         mBigButtonView.setOnClickListener(view -> captureFlag());
-
-        // show hide controls
-        mAreControlsVisible = true;
-        mParentView.setOnClickListener(view -> showHideControls());
 
         // init location
         mRxLocation = new RxLocation(this);
@@ -128,40 +124,36 @@ public class BloopActivity extends AppCompatActivity {
         mGoogleApiClient = mApplication.getGoogleApiClient();
 
         mService = mApplication.getService();
+
+        mPlaceFlagButtonMarginBottom = getResources().getDimension(R.dimen.fab_margin);
     }
 
-    private void showHideControls() {
-        if (mAreControlsVisible) {
-            mToolbar
-                    .animate()
-                    .y(-mToolbar.getHeight())
-                    .setDuration(150)
-                    .setInterpolator(PathInterpolatorCompat.create(0.4f, 0.0f, 0.6f, 1f))
-                    .start();
+    private void hidePlaceFlag() {
+        mPlaceFlagButton
+                .animate()
+                .translationY(mPlaceFlagButton.getHeight() + mPlaceFlagButtonMarginBottom)
+                .setDuration(150)
+                .setInterpolator(PathInterpolatorCompat.create(0.4f, 0.0f, 0.6f, 1f))
+                .start();
+    }
 
-            mAreControlsVisible = false;
-        } else {
-            mToolbar
-                    .animate()
-                    .y(0)
-                    .setDuration(150)
-                    .setInterpolator(new LinearOutSlowInInterpolator())
-                    .start();
-
-            mAreControlsVisible = true;
-        }
+    private void showPlaceFlag() {
+        mPlaceFlagButton
+                .animate()
+                .translationY(0)
+                .setDuration(150)
+                .setInterpolator(new LinearOutSlowInInterpolator())
+                .start();
     }
 
     private void captureFlag() {
         if (mNearbyFlagId != 0) {
-            BloopApplication application = BloopApplication.getInstance();
-
             String requestedFlagOwner = mNearbyFlagOwner;
 
             Activity self = this;
 
             mService.captureFlag(
-                    new NearbyFlag(mNearbyFlagId, BloopApplication.getInstance().getPlayerId()))
+                    new NearbyFlag(mNearbyFlagId, mApplication.getPlayerId()))
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(responseBody -> {
@@ -179,9 +171,6 @@ public class BloopActivity extends AppCompatActivity {
                     }, throwable -> {
                         mBigButtonView.hide();
                     });
-        } else {
-            showHideControls(); // easier than passing it through for some reason
-            //TODO: figure out how to actually pass the click event up the chain.
         }
     }
 
