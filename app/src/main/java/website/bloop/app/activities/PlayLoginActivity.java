@@ -113,8 +113,10 @@ public class PlayLoginActivity extends AppCompatActivity
             mService.addPlayer(player)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(responseBody -> {
-                    }, throwable -> Log.e(TAG, throwable.getMessage()));
+                    .subscribe(
+                            responseBody -> {},
+                            throwable -> Log.e(TAG, throwable.getMessage())
+                    );
         }
 
         // hide button on login
