@@ -24,13 +24,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import website.bloop.app.BloopApplication;
 import website.bloop.app.R;
-import website.bloop.app.api.PlayerLocation;
+import website.bloop.app.api.PlacedFlag;
 import website.bloop.app.views.FlagView;
 
 public class FlagCreationActivity extends AppCompatActivity {
@@ -126,8 +122,10 @@ public class FlagCreationActivity extends AppCompatActivity {
     }
 
     private void sendPlaceFlagRequest() {
-        mApplication.getService().placeFlag(
-                new PlayerLocation(mApplication.getPlayerId(), mFlagLocation))
+        BloopApplication application = BloopApplication.getInstance();
+        PlacedFlag newFlag = new PlacedFlag(application.getPlayerId(), mFlagLocation, mFlagColor);
+
+        mApplication.getService().placeFlag(newFlag)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(responseBody -> finish(), throwable -> {

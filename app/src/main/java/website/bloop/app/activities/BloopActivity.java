@@ -34,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
 import website.bloop.app.BloopApplication;
 import website.bloop.app.R;
 import website.bloop.app.api.BloopAPIService;
-import website.bloop.app.api.NearbyFlag;
+import website.bloop.app.api.CapturedFlag;
 import website.bloop.app.api.PlayerLocation;
 import website.bloop.app.fragments.BootprintMapFragment;
 import website.bloop.app.sound.BloopSoundPlayer;
@@ -154,14 +154,13 @@ public class BloopActivity extends AppCompatActivity {
 
     private void captureFlag() {
         if (mNearbyFlagId != 0) {
-            BloopApplication application = BloopApplication.getInstance();
+            CapturedFlag flag = new CapturedFlag(mNearbyFlagId, mApplication.getPlayerId());
 
             String requestedFlagOwner = mNearbyFlagOwner;
 
             Activity self = this;
 
-            mService.captureFlag(
-                    new NearbyFlag(mNearbyFlagId, BloopApplication.getInstance().getPlayerId()))
+            mService.captureFlag(flag)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(responseBody -> {
