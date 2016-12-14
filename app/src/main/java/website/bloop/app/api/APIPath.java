@@ -10,4 +10,5 @@ public interface APIPath {
     String CHECK_NEARBY = "flag/nearby";
     String CAPTURE_FLAG = "flag/capture";
     String ADD_PLAYER = "players/new";
+    String UPDATE_FIREBASE_TOKEN = "players/update-firebase";
 }

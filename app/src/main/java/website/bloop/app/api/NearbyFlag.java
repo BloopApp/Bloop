@@ -3,7 +3,7 @@ package website.bloop.app.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * POJO for receiving distance updates and capturing flags.
+ * POJO for receiving distance updates.
  */
 
 public class NearbyFlag {
@@ -17,12 +17,7 @@ public class NearbyFlag {
     private String playerName;
 
     @JsonProperty
-    private String capturingPlayerId;
-
-    public NearbyFlag(long flagId, String capturingPlayerId) {
-        this.flagId = flagId;
-        this.capturingPlayerId = capturingPlayerId;
-    }
+    private int color;
 
     public NearbyFlag() { }
 
@@ -50,11 +45,11 @@ public class NearbyFlag {
         this.playerName = playerName;
     }
 
-    public String getCapturingPlayerId() {
-        return capturingPlayerId;
+    public int getColor() {
+        return color;
     }
 
-    public void setCapturingPlayerId(String capturingPlayerId) {
-        this.capturingPlayerId = capturingPlayerId;
+    public void setColor(int color) {
+        this.color = color;
     }
 }

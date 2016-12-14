@@ -107,7 +107,7 @@ public class PlayLoginActivity extends AppCompatActivity
             BloopApplication.getInstance().setPlayerName(displayName);
             BloopApplication.getInstance().setPlayerId(playerId);
 
-            website.bloop.app.api.Player player = new website.bloop.app.api.Player(displayName, playerId);
+            website.bloop.app.api.Player player = new website.bloop.app.api.Player(displayName, playerId, null);
 
             // TODO: move this to another class?
             mService.addPlayer(player)
