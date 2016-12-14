@@ -1,4 +1,4 @@
-package website.bloop.app;
+package website.bloop.app.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,15 +20,14 @@ import com.google.example.games.basegameutils.BaseGameUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.plugins.RxJavaPlugins;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
-import website.bloop.app.api.APIPath;
+import website.bloop.app.BloopApplication;
+import website.bloop.app.R;
 import website.bloop.app.api.BloopAPIService;
+import website.bloop.app.views.SonarView;
 
 /**
  * Login authentication through Google Play Games
@@ -77,16 +76,10 @@ public class PlayLoginActivity extends AppCompatActivity
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
 
-        mService = new Retrofit.Builder()
-                .baseUrl(APIPath.BASE_PATH)
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build()
-                .create(BloopAPIService.class);
-
         // set to application (like singleton) so we can re-call it
-        BloopApplication.getInstance().setClient(mGoogleApiClient);
-        BloopApplication.getInstance().setService(mService);
+        BloopApplication.getInstance().setGoogleApiClient(mGoogleApiClient);
 
+        mService = BloopApplication.getInstance().getService();
         SharedPreferences loginPref = getSharedPreferences("LoginPREF", Context.MODE_PRIVATE);
         boolean loggedIn = loginPref.getBoolean("relogin", false);
 

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <website.bloop.app.SonarView
+    <website.bloop.app.views.SonarView
         android:id="@+id/sonar_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,7 +20,7 @@
 
     <view
         android:id="@+id/big_button_view"
-        class="website.bloop.app.BigButtonView"
+        class="website.bloop.app.views.BigButtonView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"

@@ -1,4 +1,4 @@
-package website.bloop.app;
+package website.bloop.app.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,6 +10,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.Transformation;
+
+import website.bloop.app.R;
 
 public class BigButtonView extends View {
     private Paint mButtonPrimary;

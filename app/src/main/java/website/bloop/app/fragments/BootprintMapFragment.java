@@ -1,4 +1,4 @@
-package website.bloop.app;
+package website.bloop.app.fragments;
 
 import android.content.res.Resources;
 import android.location.Location;
@@ -27,6 +27,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import website.bloop.app.R;
 
 public class BootprintMapFragment extends Fragment implements OnMapReadyCallback {
     private static final float DEFAULT_ZOOM_LEVEL = 18f;

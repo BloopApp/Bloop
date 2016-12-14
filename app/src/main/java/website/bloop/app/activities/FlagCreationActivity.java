@@ -1,4 +1,4 @@
-package website.bloop.app;
+package website.bloop.app.activities;
 
 import android.animation.Animator;
 import android.content.Intent;
@@ -26,7 +26,10 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import website.bloop.app.BloopApplication;
+import website.bloop.app.R;
 import website.bloop.app.api.PlayerLocation;
+import website.bloop.app.views.FlagView;
 
 public class FlagCreationActivity extends AppCompatActivity {
     public static final String FLAG_LOCATION = "ARG_FLAG_LOCATION";
@@ -44,7 +47,8 @@ public class FlagCreationActivity extends AppCompatActivity {
     @BindView(R.id.flag_view)
     FlagView mFlagView;
 
-    @BindView(R.id.next_button) Button mNextButton;
+    @BindView(R.id.next_button)
+    Button mNextButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

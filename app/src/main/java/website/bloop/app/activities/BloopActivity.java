@@ -1,4 +1,4 @@
-package website.bloop.app;
+package website.bloop.app.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -33,8 +33,14 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import website.bloop.app.BloopApplication;
+import website.bloop.app.sound.BloopSoundPlayer;
+import website.bloop.app.fragments.BootprintMapFragment;
+import website.bloop.app.R;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
+import website.bloop.app.views.BigButtonView;
+import website.bloop.app.views.SonarView;
 
 public class BloopActivity extends AppCompatActivity {
     private static final String TAG = "BloopActivity";
@@ -112,7 +118,7 @@ public class BloopActivity extends AppCompatActivity {
 
         setSupportActionBar(mToolbar);
 
-        mGoogleApiClient = BloopApplication.getInstance().getClient();
+        mGoogleApiClient = BloopApplication.getInstance().getGoogleApiClient();
 
         // init sounds
         mBloopSoundPlayer = new BloopSoundPlayer(this);
