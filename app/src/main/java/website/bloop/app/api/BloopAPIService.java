@@ -12,14 +12,17 @@ import retrofit2.http.POST;
 
 public interface BloopAPIService {
     @POST(APIPath.PLACE_FLAG)
-    Call<ResponseBody> placeFlag(@Body PlayerLocation location);
+    Call<ResponseBody> placeFlag(@Body PlacedFlag location);
 
     @POST(APIPath.CHECK_NEARBY)
     Call<NearbyFlag> getNearestFlag(@Body PlayerLocation location);
 
     @POST(APIPath.CAPTURE_FLAG)
-    Call<ResponseBody> captureFlag(@Body NearbyFlag flag);
+    Call<ResponseBody> captureFlag(@Body CapturedFlag flag);
 
     @POST(APIPath.ADD_PLAYER)
     Call<ResponseBody> addPlayer(@Body Player player);
+
+    @POST(APIPath.UPDATE_FIREBASE_TOKEN)
+    Call<ResponseBody> updateFirebaseToken(@Body Player player);
 }

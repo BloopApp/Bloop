@@ -111,7 +111,7 @@ public class PlayLoginActivity extends AppCompatActivity
             playerId = Games.Players.getCurrentPlayerId(mGoogleApiClient);
             BloopApplication.getInstance().setPlayerName(displayName);
             BloopApplication.getInstance().setPlayerId(playerId);
-            website.bloop.app.api.Player player = new website.bloop.app.api.Player(displayName, playerId);
+            website.bloop.app.api.Player player = new website.bloop.app.api.Player(displayName, playerId, null);
             Call<ResponseBody> call = mService.addPlayer(player);
             call.enqueue(new Callback<ResponseBody>() {
                 @Override

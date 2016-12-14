@@ -26,7 +26,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import website.bloop.app.api.PlayerLocation;
+import website.bloop.app.api.PlacedFlag;
 
 public class FlagCreationActivity extends AppCompatActivity {
     public static final String FLAG_LOCATION = "ARG_FLAG_LOCATION";
@@ -117,7 +117,8 @@ public class FlagCreationActivity extends AppCompatActivity {
 
     private void sendPlaceFlagRequest() {
         BloopApplication application = BloopApplication.getInstance();
-        Call<ResponseBody> call = application.getService().placeFlag(new PlayerLocation(application.getPlayerId(), mFlagLocation));
+        PlacedFlag newFlag = new PlacedFlag(application.getPlayerId(), mFlagLocation, mFlagColor);
+        Call<ResponseBody> call = application.getService().placeFlag(newFlag);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

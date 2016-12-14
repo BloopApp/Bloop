@@ -47,6 +47,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import website.bloop.app.api.CapturedFlag;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
 
@@ -173,7 +174,7 @@ public class BloopActivity extends AppCompatActivity implements OnMapReadyCallba
         if (mNearbyFlagId != 0) {
             BloopApplication application = BloopApplication.getInstance();
             final Call<ResponseBody> call = application.getService().captureFlag(
-                    new NearbyFlag(mNearbyFlagId, BloopApplication.getInstance().getPlayerId())
+                    new CapturedFlag(mNearbyFlagId, BloopApplication.getInstance().getPlayerId())
             );
 
             String requestedFlagOwner = mNearbyFlagOwner;
