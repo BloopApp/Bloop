@@ -97,6 +97,27 @@ public class BloopActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        // init global references / api stuff
+        mApplication = BloopApplication.getInstance();
+
+        mGoogleApiClient = mApplication.getGoogleApiClient();
+
+        mService = mApplication.getService();
+
+        // hide flag by default
+        mPlaceFlagButtonMarginBottom = getResources().getDimension(R.dimen.fab_margin);
+        // TODO: this doesn't actually animate the fab far enough
+        mPlaceFlagButton.setTranslationY(mPlaceFlagButton.getHeight() + mPlaceFlagButtonMarginBottom);
+
+        mService.checkHasPlacedFlag(mApplication.getPlayerId())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ownFlag -> {
+                    if (!ownFlag.getDoesExist()) {
+                        showPlaceFlag();
+                    }
+                }, throwable -> Log.e(TAG, throwable.getMessage()));
+
         mPlaceFlagButton.setOnClickListener(view -> placeFlag());
 
         mBigButtonView.setOnClickListener(view -> captureFlag());
@@ -117,15 +138,6 @@ public class BloopActivity extends AppCompatActivity {
 
         // init sounds
         mBloopSoundPlayer = new BloopSoundPlayer(this);
-
-        // init global references / api stuff
-        mApplication = BloopApplication.getInstance();
-
-        mGoogleApiClient = mApplication.getGoogleApiClient();
-
-        mService = mApplication.getService();
-
-        mPlaceFlagButtonMarginBottom = getResources().getDimension(R.dimen.fab_margin);
     }
 
     private void hidePlaceFlag() {
