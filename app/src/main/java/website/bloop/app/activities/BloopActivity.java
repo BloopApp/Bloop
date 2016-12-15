@@ -1,6 +1,5 @@
 package website.bloop.app.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,7 +9,6 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v4.view.animation.PathInterpolatorCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -37,10 +35,13 @@ import website.bloop.app.BloopApplication;
 import website.bloop.app.R;
 import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.api.CapturedFlag;
+import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
+import website.bloop.app.dialogs.FlagCapturedDialogFragment;
 import website.bloop.app.fragments.BootprintMapFragment;
 import website.bloop.app.sound.BloopSoundPlayer;
 import website.bloop.app.views.BigButtonView;
+import website.bloop.app.views.FlagView;
 import website.bloop.app.views.SonarView;
 
 /**
@@ -51,6 +52,7 @@ public class BloopActivity extends AppCompatActivity {
     private static final String PREF_SOUND = "MutePREF";
     private static final String PREF_SOUND_VAL = "muted";
     private static final String TAG = "BloopActivity";
+    private static final String FLAG_CAPTURED_DIALOG_TAG = "FlagDialog";
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final int REQUEST_LEADERBOARD = 1000;
 
@@ -83,8 +85,7 @@ public class BloopActivity extends AppCompatActivity {
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
 
-    private long mNearbyFlagId;
-    private String mNearbyFlagOwner;
+    private NearbyFlag mNearbyFlag;
 
     private GoogleApiClient mGoogleApiClient;
     private BloopAPIService mService;
@@ -183,12 +184,13 @@ public class BloopActivity extends AppCompatActivity {
      * Draw a different bloop over the main bloops to prompt the user to click and capture a flag.
      */
     private void captureFlag() {
-        if (mNearbyFlagId != 0) {
-            CapturedFlag flag = new CapturedFlag(mNearbyFlagId, mApplication.getPlayerId());
+        if (mNearbyFlag != null) {
+            CapturedFlag flag = new CapturedFlag(
+                    mNearbyFlag.getFlagId(),
+                    mApplication.getPlayerId()
+            );
 
-            String requestedFlagOwner = mNearbyFlagOwner;
-
-            Activity self = this;
+            // TODO: slowly mute the boop sounds so the bloop is better
 
             mService.captureFlag(flag)
                     .subscribeOn(Schedulers.newThread())
@@ -199,15 +201,32 @@ public class BloopActivity extends AppCompatActivity {
                             mBloopSoundPlayer.bloop();
                         }
 
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(self);
-                        builder.setTitle(String.format(getString(R.string.you_captured_x_flag_format_string), requestedFlagOwner))
-                                .setMessage("Add one more to that collection")
-                                .setNeutralButton(
-                                        getString(R.string.dismiss_capture_flag_dialog_text),
-                                        (dialogInterface, i) -> dialogInterface.dismiss())
-                                .show();
+                        final FlagView flagView = new FlagView(getBaseContext());
+                        flagView.setFlagColor(mNearbyFlag.getColor());
+
+                        final FlagCapturedDialogFragment flagCapturedDialog = new FlagCapturedDialogFragment();
+                        final Bundle flagCapturedDialogBundle = new Bundle();
+                        flagCapturedDialogBundle.putString(
+                                FlagCapturedDialogFragment.ARG_TITLE,
+                                String.format(getString(R.string.you_captured_x_flag_format_string), mNearbyFlag.getPlayerName())
+                        );
+
+                        flagCapturedDialogBundle.putInt(
+                                FlagCapturedDialogFragment.ARG_FLAG_COLOR,
+                                mNearbyFlag.getColor()
+                        );
+
+                        flagCapturedDialogBundle.putString(
+                                FlagCapturedDialogFragment.ARG_POINTS_TEXT,
+                                "+1 point"
+                        );
+
+                        flagCapturedDialog.setArguments(flagCapturedDialogBundle);
+                        flagCapturedDialog.show(getSupportFragmentManager(), "FlagDialog");
+
                         mBigButtonView.hide();
                     }, throwable -> {
+                        Log.e(TAG, throwable.getMessage());
                         mBigButtonView.hide();
                     });
         }
@@ -287,13 +306,11 @@ public class BloopActivity extends AppCompatActivity {
                             // if player name is present, that means that there is a flag a
                             // capturable distance away
                             // TODO: alert the user that they can capture this flag
-                            mNearbyFlagId = nearbyFlag.getFlagId();
-                            mNearbyFlagOwner = nearbyFlag.getPlayerName();
+                            mNearbyFlag = nearbyFlag;
 
                             mBigButtonView.show();
                         } else {
-                            mNearbyFlagId = 0; // this is the "null" value of the flag id
-                            mNearbyFlagOwner = null;
+                            mNearbyFlag = null;
                             mBigButtonView.hide();
                         }
 

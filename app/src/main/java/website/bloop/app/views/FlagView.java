@@ -1,6 +1,7 @@
 package website.bloop.app.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,33 +10,48 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 
+import website.bloop.app.R;
+
 /**
  * Flag which is drawn for FlagCreationActivity and can be animated for when placing.
  */
 public class FlagView extends View {
     private static final float GOLDEN_RATIO = 1.61803399f;
+    private boolean mShowPole;
+    private int mFlagColor;
     private Path mTrianglePath;
     private Rect mPoleRect;
     private Paint mFlagPaint;
     private Paint mPolePaint;
-    private int mFlagColor = Color.BLACK;
 
     public FlagView(Context context) {
         super(context);
-        initialize();
+        initialize(null);
     }
 
     public FlagView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initialize();
+        initialize(attrs);
     }
 
     public FlagView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initialize();
+        initialize(attrs);
     }
 
-    private void initialize() {
+    private void initialize(AttributeSet attrs) {
+        TypedArray a = getContext().getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.FlagView,
+                0, 0);
+
+        try {
+            mShowPole = a.getBoolean(R.styleable.FlagView_showPole, true);
+            mFlagColor = a.getColor(R.styleable.FlagView_flagColor, Color.BLACK);
+        } finally {
+            a.recycle();
+        }
+
         mFlagPaint = new Paint();
         mFlagPaint.setColor(mFlagColor);
         mFlagPaint.setStyle(Paint.Style.FILL);
