@@ -8,6 +8,9 @@ import android.os.Build;
 
 import website.bloop.app.R;
 
+/**
+ * Play sounds for bloops and capturing other player's flags.
+ */
 public class BloopSoundPlayer {
     private final Context mContext;
 
@@ -42,10 +45,16 @@ public class BloopSoundPlayer {
         mBloop = mSoundPool.load(mContext, R.raw.bloop, 1);
     }
 
+    /**
+     * Shorter noise that happens when the bloops are drawn on screen.
+     */
     public void boop() {
         mSoundPool.play(mBoop, VOLUME, VOLUME, PRIORITY, REPEATS, PLAYBACK_SPEED);
     }
 
+    /**
+     * Sound which happens when a user captures another's flag.
+     */
     public void bloop() {
         mSoundPool.play(mBloop, VOLUME, VOLUME, PRIORITY, REPEATS, PLAYBACK_SPEED);
     }

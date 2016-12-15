@@ -29,6 +29,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import website.bloop.app.R;
 
+/**
+ * Fragment which animates bootprints on the map to show changing distance.
+ * Visual eye candy that looks really cool and shows a user where they previously were.
+ * Bootprints eventually disappear to not clutter the screen.
+ */
 public class BootprintMapFragment extends Fragment implements OnMapReadyCallback {
     private static final float DEFAULT_ZOOM_LEVEL = 18f;
     // TODO: replace this with actual sphere distance calculations
