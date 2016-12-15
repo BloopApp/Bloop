@@ -29,6 +29,10 @@ import website.bloop.app.R;
 import website.bloop.app.api.PlacedFlag;
 import website.bloop.app.views.FlagView;
 
+/**
+ * Activity which allows a user to customize their flag and gets called to place at their
+ * current location.
+ */
 public class FlagCreationActivity extends AppCompatActivity {
     public static final String FLAG_LOCATION = "ARG_FLAG_LOCATION";
     private static final String TAG = "FlagCreationActivity";
@@ -83,6 +87,9 @@ public class FlagCreationActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Animate the placing of a flag and place the flag.
+     */
     private void onClickNextButton() {
         Log.i(TAG, "Placing flag at " + mFlagLocation.getLatitude() + ", " + mFlagLocation.getLongitude());
 
@@ -121,6 +128,9 @@ public class FlagCreationActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Shoot off a request to place the flag and save its location with the server.
+     */
     private void sendPlaceFlagRequest() {
         BloopApplication application = BloopApplication.getInstance();
         PlacedFlag newFlag = new PlacedFlag(application.getPlayerId(), mFlagLocation, mFlagColor);
@@ -142,6 +152,9 @@ public class FlagCreationActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Show a cool color picker to customize a user's flag color.
+     */
     private void showColorPickerDialog() {
         int currentBackgroundColor = mFlagColor;
         ColorPickerDialogBuilder

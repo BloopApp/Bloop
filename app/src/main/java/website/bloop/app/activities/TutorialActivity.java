@@ -46,6 +46,10 @@ public class TutorialActivity extends AppIntro {
                 ContextCompat.getColor(getApplicationContext(), R.color.colorSky)));
     }
 
+    /**
+     * Skip past the tutorial activity if pressed.
+     * @param currentFragment
+     */
     @Override
     public void onSkipPressed(Fragment currentFragment) {
         super.onSkipPressed(currentFragment);
@@ -64,12 +68,19 @@ public class TutorialActivity extends AppIntro {
         leaveTutorial();
     }
 
-    // don't do anything special on slide change
+    /**
+     * Do not do anything special on slide change.
+     * @param oldFragment
+     * @param newFragment
+     */
     @Override
     public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
         super.onSlideChanged(oldFragment, newFragment);
     }
 
+    /**
+     * Update the pref to now skip the tutorial activity on subsequent runs.
+     */
     private void saveTutorialDone() {
         // set the pref to skip this activity now
         SharedPreferences pref = getSharedPreferences(BLOOP_PREFERENCE_FILE, Context.MODE_PRIVATE);
@@ -78,6 +89,9 @@ public class TutorialActivity extends AppIntro {
         ed.apply();
     }
 
+    /**
+     * Pass intent to login activity.
+     */
     private void leaveTutorial() {
         Intent newIntent = new Intent(getBaseContext(), PlayLoginActivity.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -85,6 +99,11 @@ public class TutorialActivity extends AppIntro {
         finish();
     }
 
+    /**
+     * Check if not first run, skip tutorial activity if so.
+     * @param context
+     * @return
+     */
     public static boolean hasTutorialRun(Context context) {
         SharedPreferences activityPref = context.getSharedPreferences(BLOOP_PREFERENCE_FILE, Context.MODE_PRIVATE);
         return activityPref.getBoolean(PREF_TUTORIAL_RUN, false);

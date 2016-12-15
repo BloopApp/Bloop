@@ -9,6 +9,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import website.bloop.app.api.Player;
 
+/**
+ * Firebase ID service which is used for push notifications and registering this app instance
+ * with Firebase.
+ */
 public class BloopFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     private static final String TAG = "BloopFirebaseIIDService";

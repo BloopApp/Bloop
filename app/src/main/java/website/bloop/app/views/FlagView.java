@@ -12,6 +12,9 @@ import android.view.View;
 
 import website.bloop.app.R;
 
+/**
+ * Flag which is drawn for FlagCreationActivity and can be animated for when placing.
+ */
 public class FlagView extends View {
     private static final float GOLDEN_RATIO = 1.61803399f;
     private boolean mShowPole;
