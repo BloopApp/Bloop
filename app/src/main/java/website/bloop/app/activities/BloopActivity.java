@@ -1,7 +1,9 @@
 package website.bloop.app.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -79,9 +81,12 @@ public class BloopActivity extends AppCompatActivity {
     private String mNearbyFlagOwner;
 
     private GoogleApiClient mGoogleApiClient;
-    private BloopSoundPlayer mBloopSoundPlayer;
     private BloopAPIService mService;
     private BloopApplication mApplication;
+
+    private BloopSoundPlayer mBloopSoundPlayer;
+    private SharedPreferences mutePref;
+    private boolean mute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +122,10 @@ public class BloopActivity extends AppCompatActivity {
 
         // init sounds
         mBloopSoundPlayer = new BloopSoundPlayer(this);
+
+        // mute logic
+        mutePref = getSharedPreferences("MutePREF", Context.MODE_PRIVATE);
+        mute = mutePref.getBoolean("muted", false);
 
         // init global references / api stuff
         mApplication = BloopApplication.getInstance();
@@ -159,7 +168,9 @@ public class BloopActivity extends AppCompatActivity {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(responseBody -> {
                         // flag capture success!
-                        mBloopSoundPlayer.bloop();
+                        if (!mute) {
+                            mBloopSoundPlayer.bloop();
+                        }
 
                         final AlertDialog.Builder builder = new AlertDialog.Builder(self);
                         builder.setTitle(String.format(getString(R.string.you_captured_x_flag_format_string), requestedFlagOwner))
@@ -297,7 +308,9 @@ public class BloopActivity extends AppCompatActivity {
 
     private void bloop() {
         mSonarView.bloop();
-        mBloopSoundPlayer.boop();
+        if (!mute) {
+            mBloopSoundPlayer.boop();
+        }
 
         mLastBloopTime = System.currentTimeMillis();
     }
@@ -313,6 +326,17 @@ public class BloopActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.item_mute:
+                SharedPreferences.Editor ed = mutePref.edit();
+                if (!mute) {
+                    mute = true;
+                    ed.putBoolean("muted", true);
+                } else {
+                    mute = false;
+                    ed.putBoolean("muted", false);
+                }
+                ed.apply();
+                return true;
             case R.id.item_leaderboard:
                 startActivityForResult(
                         Games.Leaderboards.getLeaderboardIntent(
