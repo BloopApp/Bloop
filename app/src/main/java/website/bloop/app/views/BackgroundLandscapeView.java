@@ -4,15 +4,16 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
 import website.bloop.app.R;
 
+/**
+ * Place flag background which the flag is then animated over.
+ */
 public class BackgroundLandscapeView extends View {
 
     private int mBackgroundColor;
