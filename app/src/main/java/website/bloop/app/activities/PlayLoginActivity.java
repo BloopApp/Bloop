@@ -35,7 +35,10 @@ import website.bloop.app.views.SonarView;
 public class PlayLoginActivity extends AppCompatActivity
         implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    final String TAG = "PlayLogin";
+    private static final String PREF_LOGIN = "LoginPREF";
+    private static final String PREF_LOGIN_VAL = "relogin";
+    private static final String TAG = "PlayLogin";
+
     private static int RC_SIGN_IN = 9001;
 
     private boolean mResolvingConnectionFailure = false;
@@ -78,8 +81,8 @@ public class PlayLoginActivity extends AppCompatActivity
         BloopApplication.getInstance().setGoogleApiClient(mGoogleApiClient);
 
         mService = BloopApplication.getInstance().getService();
-        SharedPreferences loginPref = getSharedPreferences("LoginPREF", Context.MODE_PRIVATE);
-        boolean loggedIn = loginPref.getBoolean("relogin", false);
+        SharedPreferences loginPref = getSharedPreferences(PREF_LOGIN, Context.MODE_PRIVATE);
+        boolean loggedIn = loginPref.getBoolean(PREF_LOGIN_VAL, false);
 
         if (loggedIn) {
             mGoogleApiClient.connect();
@@ -124,9 +127,9 @@ public class PlayLoginActivity extends AppCompatActivity
         loginText.setText(displayName);
 
         // store that we are logged in
-        SharedPreferences pref = getSharedPreferences("LoginPREF", Context.MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences(PREF_LOGIN, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = pref.edit();
-        ed.putBoolean("relogin", true);
+        ed.putBoolean(PREF_LOGIN_VAL, true);
         ed.apply();
 
         // start the main game now
