@@ -12,4 +12,5 @@ public interface APIPath {
     String ADD_PLAYER = "players/new";
     String UPDATE_FIREBASE_TOKEN = "players/update-firebase";
     String HAS_PLACED_FLAG = "players/has-flag";
+    String DELETE_FLAG = "/players/delete-flag";
 }

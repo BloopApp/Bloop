@@ -3,6 +3,7 @@ package website.bloop.app.api;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -29,4 +30,7 @@ public interface BloopAPIService {
 
     @GET(APIPath.HAS_PLACED_FLAG)
     Observable<OwnFlag> checkHasPlacedFlag(@Query("id") String googlePlayId);
+
+    @DELETE(APIPath.DELETE_FLAG)
+    Observable<OwnFlag> deleteFlag(@Query("id") String googlePlayId);
 }
