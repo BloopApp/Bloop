@@ -45,7 +45,8 @@ import website.bloop.app.views.BigButtonView;
 import website.bloop.app.views.SonarView;
 
 /**
- *
+ * Main game activity, which shows bloop animations and sounds, as well as controls
+ * game interaction such as capturing bloops or checking the leaderboards.
  */
 public class BloopActivity extends AppCompatActivity {
     private static final String PREF_SOUND = "MutePREF";
@@ -155,6 +156,9 @@ public class BloopActivity extends AppCompatActivity {
         mute = mutePref.getBoolean(PREF_SOUND_VAL, false);
     }
 
+    /**
+     * Hide the fab and blocking the ability to place a flag.
+     */
     private void hidePlaceFlag() {
         mPlaceFlagButton
                 .animate()
@@ -164,6 +168,9 @@ public class BloopActivity extends AppCompatActivity {
                 .start();
     }
 
+    /**
+     * Show the fab and add the ability to place a flag.
+     */
     private void showPlaceFlag() {
         mPlaceFlagButton
                 .animate()
@@ -173,6 +180,9 @@ public class BloopActivity extends AppCompatActivity {
                 .start();
     }
 
+    /**
+     * Draw a different bloop over the main bloops to prompt the user to click and capture a flag.
+     */
     private void captureFlag() {
         if (mNearbyFlagId != 0) {
             CapturedFlag flag = new CapturedFlag(mNearbyFlagId, mApplication.getPlayerId());
@@ -216,7 +226,7 @@ public class BloopActivity extends AppCompatActivity {
     }
 
     /**
-     * Shows an activity that describes the open source libraries used in this project
+     * Shows an activity that describes the open source libraries used in this project.
      */
     private void startAboutLibraries() {
         new LibsBuilder()
@@ -226,6 +236,10 @@ public class BloopActivity extends AppCompatActivity {
                 .start(this);
     }
 
+    /**
+     * Request location permissions so we can track location.
+     * @return
+     */
     private Observable<Boolean> requestLocationPermissions() {
         return RxPermissions.getInstance(this)
                 .request(android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -234,6 +248,9 @@ public class BloopActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Main location tracking logic.
+     */
     private void startTrackingLocation() {
         Log.d(TAG, "Location tracking started");
 
@@ -245,7 +262,6 @@ public class BloopActivity extends AppCompatActivity {
         // this should never be called if the permission hasn't been granted.
         //noinspection MissingPermission
         mLocationDisposable = mRxLocation.location().updates(locationRequest)
-                //TODO: we might want to clean this data before passing it on
                 .doOnEach(location -> mCurrentLocation = location.getValue())
                 .doOnEach(location -> mBootprintMapFragment.updateMapCenter(location.getValue()))
                 .doOnEach(location -> mBootprintMapFragment.updatePlayerLocation(location.getValue()))
@@ -253,9 +269,12 @@ public class BloopActivity extends AppCompatActivity {
                 .subscribe();
     }
 
+    /**
+     * Lets a user customize and place a flag at their current location.
+     * Passes intent to FlagCreationActivity.
+     */
     private void placeFlag() {
         if (mCurrentLocation != null) {
-            // TODO organize bloop and placing flag better
 
             final Intent placeFlagIntent = new Intent(this, FlagCreationActivity.class);
             placeFlagIntent.putExtra(FlagCreationActivity.FLAG_LOCATION, mCurrentLocation);
@@ -263,6 +282,9 @@ public class BloopActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Check with server to compute closest flag and update how often bloops are animated on-screen.
+     */
     private void updateBloopFrequency() {
         if (mCurrentLocation != null) {
             mService.getNearestFlag(
@@ -292,6 +314,9 @@ public class BloopActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Actually reschedule the "timer" to redraw a bloop on screen.
+     */
     private void rescheduleBloops() {
         double timeSinceLastBloop = (double) (System.currentTimeMillis() - mLastBloopTime);
 
@@ -335,6 +360,9 @@ public class BloopActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * BLOOP!!!
+     */
     private void bloop() {
         mSonarView.bloop();
         if (!mute) {
@@ -344,6 +372,11 @@ public class BloopActivity extends AppCompatActivity {
         mLastBloopTime = System.currentTimeMillis();
     }
 
+    /**
+     * Inflate options dropdown, as well as set mute checkbox to preexisting value, if one available.
+     * @param menu
+     * @return
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.bloop_activity_menu, menu);
@@ -355,6 +388,11 @@ public class BloopActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Show leaderboards, mute audio, show library information.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection

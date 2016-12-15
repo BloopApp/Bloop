@@ -9,6 +9,9 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 
+/**
+ * Flag which is drawn for FlagCreationActivity and can be animated for when placing.
+ */
 public class FlagView extends View {
     private static final float GOLDEN_RATIO = 1.61803399f;
     private Path mTrianglePath;
