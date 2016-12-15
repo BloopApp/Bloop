@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -120,7 +121,7 @@ public class BloopActivity extends AppCompatActivity {
         // hide flag by default
         mPlaceFlagButtonMarginBottom = getResources().getDimension(R.dimen.fab_margin);
         // TODO: this doesn't actually animate the fab far enough
-        mPlaceFlagButton.setTranslationY(mPlaceFlagButton.getHeight() + mPlaceFlagButtonMarginBottom);
+        mPlaceFlagButton.setVisibility(View.INVISIBLE);
 
         mService.checkHasPlacedFlag(mApplication.getPlayerId())
                 .subscribeOn(Schedulers.newThread())
@@ -173,6 +174,16 @@ public class BloopActivity extends AppCompatActivity {
      * Show the fab and add the ability to place a flag.
      */
     private void showPlaceFlag() {
+        // if we have set the visibility to invisible (as we do in onCreate), we should put this
+        // below the screen
+        if (mPlaceFlagButton.getVisibility() == View.INVISIBLE) {
+            mPlaceFlagButton.setTranslationY(
+                    mPlaceFlagButton.getHeight() + mPlaceFlagButtonMarginBottom
+            );
+
+            mPlaceFlagButton.setVisibility(View.VISIBLE);
+        }
+
         mPlaceFlagButton
                 .animate()
                 .translationY(0)
@@ -242,6 +253,8 @@ public class BloopActivity extends AppCompatActivity {
                 }, throwable -> {
                     Log.e(TAG, throwable.getMessage());
                 });
+
+        showPlaceFlag();
     }
 
     /**
@@ -298,6 +311,8 @@ public class BloopActivity extends AppCompatActivity {
             final Intent placeFlagIntent = new Intent(this, FlagCreationActivity.class);
             placeFlagIntent.putExtra(FlagCreationActivity.FLAG_LOCATION, mCurrentLocation);
             startActivity(placeFlagIntent);
+
+            hidePlaceFlag();
         }
     }
 
