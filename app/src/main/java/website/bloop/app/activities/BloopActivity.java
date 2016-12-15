@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
@@ -232,6 +233,17 @@ public class BloopActivity extends AppCompatActivity {
         }
     }
 
+    private void deleteFlag() {
+        mService.deleteFlag(mApplication.getPlayerId())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ownFlag -> {
+                    Toast.makeText(this, "Flag deleted", Toast.LENGTH_SHORT).show();
+                }, throwable -> {
+                    Log.e(TAG, throwable.getMessage());
+                });
+    }
+
     /**
      * Shows an activity that describes the open source libraries used in this project.
      */
@@ -410,6 +422,9 @@ public class BloopActivity extends AppCompatActivity {
                         ),
                         REQUEST_LEADERBOARD
                 );
+                return true;
+            case R.id.item_delete:
+                deleteFlag();
                 return true;
             case R.id.item_mute:
                 SharedPreferences.Editor ed = mutePref.edit();

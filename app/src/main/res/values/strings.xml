@@ -11,4 +11,8 @@
     <string name="dismiss_capture_flag_dialog_text">Ok</string>
     <string name="you_captured_x_flag_format_string">You captured %s\'s flag!</string>
     <string name="choose_flag_color">Choose flag color</string>
+    <string name="leaderboard_item">Leaderboard</string>
+    <string name="delete_flag_item">Delete flag</string>
+    <string name="mute_audio_item">Mute audio</string>
+    <string name="about_libraries_item">About libraries</string>
 </resources>
