@@ -43,7 +43,12 @@ import website.bloop.app.sound.BloopSoundPlayer;
 import website.bloop.app.views.BigButtonView;
 import website.bloop.app.views.SonarView;
 
+/**
+ *
+ */
 public class BloopActivity extends AppCompatActivity {
+    private static final String PREF_SOUND = "MutePREF";
+    private static final String PREF_SOUND_VAL = "muted";
     private static final String TAG = "BloopActivity";
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final int REQUEST_LEADERBOARD = 1000;
@@ -124,8 +129,8 @@ public class BloopActivity extends AppCompatActivity {
         mBloopSoundPlayer = new BloopSoundPlayer(this);
 
         // mute logic
-        mutePref = getSharedPreferences("MutePREF", Context.MODE_PRIVATE);
-        mute = mutePref.getBoolean("muted", false);
+        mutePref = getSharedPreferences(PREF_SOUND, Context.MODE_PRIVATE);
+        mute = mutePref.getBoolean(PREF_SOUND_VAL, false);
 
         // init global references / api stuff
         mApplication = BloopApplication.getInstance();
@@ -316,9 +321,13 @@ public class BloopActivity extends AppCompatActivity {
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.bloop_activity_menu, menu);
+
+        // set default value of checkbox
+        MenuItem item = menu.findItem(R.id.item_mute);
+        item.setChecked(mute);
+
         return true;
     }
 
@@ -326,17 +335,6 @@ public class BloopActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.item_mute:
-                SharedPreferences.Editor ed = mutePref.edit();
-                if (!mute) {
-                    mute = true;
-                    ed.putBoolean("muted", true);
-                } else {
-                    mute = false;
-                    ed.putBoolean("muted", false);
-                }
-                ed.apply();
-                return true;
             case R.id.item_leaderboard:
                 startActivityForResult(
                         Games.Leaderboards.getLeaderboardIntent(
@@ -345,6 +343,19 @@ public class BloopActivity extends AppCompatActivity {
                         ),
                         REQUEST_LEADERBOARD
                 );
+                return true;
+            case R.id.item_mute:
+                SharedPreferences.Editor ed = mutePref.edit();
+                if (!mute) {
+                    mute = true;
+                    item.setChecked(true);
+                    ed.putBoolean(PREF_SOUND_VAL, true);
+                } else {
+                    mute = false;
+                    item.setChecked(false);
+                    ed.putBoolean(PREF_SOUND_VAL, false);
+                }
+                ed.apply();
                 return true;
             case R.id.item_about_libs:
                 startAboutLibraries();

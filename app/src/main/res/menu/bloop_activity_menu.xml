@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Mute audio"
-        android:id="@+id/item_mute" />
     <item android:title="Leaderboard"
         android:id="@+id/item_leaderboard" />
+    <item android:title="Mute audio"
+        android:id="@+id/item_mute"
+        android:checkable="true" />
     <item android:title="About libraries"
         android:id="@+id/item_about_libs" />
 </menu>
