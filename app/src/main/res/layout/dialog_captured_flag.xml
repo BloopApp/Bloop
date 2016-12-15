@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="Got it!"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/captured_title_view"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:padding="16dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="3"
+        android:paddingTop="16dp"
+        android:background="@color/colorSky">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <view
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            class="website.bloop.app.views.FlagView"
+            android:id="@+id/captured_flag_view"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <TextView
+        android:text="+ 10 points"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="@color/colorGrass"
+        android:id="@+id/captured_points_view" />
+
+</LinearLayout>

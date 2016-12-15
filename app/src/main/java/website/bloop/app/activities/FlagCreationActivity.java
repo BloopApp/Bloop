@@ -134,6 +134,7 @@ public class FlagCreationActivity extends AppCompatActivity {
     private void sendPlaceFlagRequest() {
         BloopApplication application = BloopApplication.getInstance();
         PlacedFlag newFlag = new PlacedFlag(application.getPlayerId(), mFlagLocation, mFlagColor);
+        Log.d(TAG, newFlag.toString());
 
         mApplication.getService().placeFlag(newFlag)
                 .subscribeOn(Schedulers.newThread())
