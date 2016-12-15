@@ -1,6 +1,5 @@
 package website.bloop.app.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
@@ -8,10 +7,8 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v4.view.animation.PathInterpolatorCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,6 +35,7 @@ import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.api.CapturedFlag;
 import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
+import website.bloop.app.dialogs.FlagCapturedDialogFragment;
 import website.bloop.app.fragments.BootprintMapFragment;
 import website.bloop.app.sound.BloopSoundPlayer;
 import website.bloop.app.views.BigButtonView;
@@ -46,6 +44,7 @@ import website.bloop.app.views.SonarView;
 
 public class BloopActivity extends AppCompatActivity {
     private static final String TAG = "BloopActivity";
+    private static final String FLAG_CAPTURED_DIALOG_TAG = "FlagDialog";
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final int REQUEST_LEADERBOARD = 1000;
 
@@ -157,8 +156,6 @@ public class BloopActivity extends AppCompatActivity {
 
             // TODO: slowly mute the boop sounds so the bloop is better
 
-            final Activity self = this;
-
             mService.captureFlag(flag)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -169,20 +166,31 @@ public class BloopActivity extends AppCompatActivity {
                         final FlagView flagView = new FlagView(getBaseContext());
                         flagView.setFlagColor(mNearbyFlag.getColor());
 
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(self);
-                        builder.setTitle(String.format(getString(R.string.you_captured_x_flag_format_string), mNearbyFlag.getPlayerName()))
-                                .setView(flagView)
-                                .setMessage("Add one more to that collection")
-                                .setNeutralButton(
-                                        getString(R.string.dismiss_capture_flag_dialog_text),
-                                        (dialogInterface, i) -> dialogInterface.dismiss())
-                                .show();
+                        final FlagCapturedDialogFragment flagCapturedDialog = new FlagCapturedDialogFragment();
+                        final Bundle flagCapturedDialogBundle = new Bundle();
+                        flagCapturedDialogBundle.putString(
+                                FlagCapturedDialogFragment.ARG_TITLE,
+                                String.format(getString(R.string.you_captured_x_flag_format_string), mNearbyFlag.getPlayerName())
+                        );
+
+                        flagCapturedDialogBundle.putInt(
+                                FlagCapturedDialogFragment.ARG_FLAG_COLOR,
+                                mNearbyFlag.getColor()
+                        );
+
+                        flagCapturedDialogBundle.putString(
+                                FlagCapturedDialogFragment.ARG_POINTS_TEXT,
+                                "+1 point"
+                        );
+
+                        flagCapturedDialog.setArguments(flagCapturedDialogBundle);
+                        flagCapturedDialog.show(getSupportFragmentManager(), "FlagDialog");
+
                         mBigButtonView.hide();
                     }, throwable -> {
+                        Log.e(TAG, throwable.getMessage());
                         mBigButtonView.hide();
                     });
-
-            mNearbyFlag = null; // TODO REMOVE THIS
         }
     }
 
@@ -249,13 +257,10 @@ public class BloopActivity extends AppCompatActivity {
                             // capturable distance away
                             // TODO: alert the user that they can capture this flag
                             mNearbyFlag = nearbyFlag;
-                            mNearbyFlagId = nearbyFlag.getFlagId();
-                            mNearbyFlagOwner = nearbyFlag.getPlayerName();
 
                             mBigButtonView.show();
                         } else {
-                            mNearbyFlagId = 0; // this is the "null" value of the flag id
-                            mNearbyFlagOwner = null;
+                            mNearbyFlag = null;
                             mBigButtonView.hide();
                         }
 
