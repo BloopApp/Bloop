@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
-        android:text="Got it!"
+        android:id="@+id/captured_title_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/captured_title_view"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:padding="16dp" />
+        android:padding="16dp"
+        android:text="Got it!"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="3"
+        android:background="@color/colorSky"
+        android:orientation="horizontal"
         android:paddingTop="16dp"
-        android:background="@color/colorSky">
+        android:weightSum="3">
 
         <Space
             android:layout_width="wrap_content"
@@ -25,26 +26,26 @@
             android:layout_weight="1" />
 
         <view
+            android:id="@+id/captured_flag_view"
+            class="website.bloop.app.views.FlagView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            class="website.bloop.app.views.FlagView"
-            android:id="@+id/captured_flag_view"
             android:layout_weight="1" />
     </LinearLayout>
 
     <TextView
-        android:text="+ 10 points"
+        android:id="@+id/captured_points_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorGrass"
+        android:padding="16dp"
+        android:text="+ 10 points" />
+
+    <TextView
+        android:id="@+id/captured_total_score_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:background="@color/colorGrass"
-        android:id="@+id/captured_points_view" />
-
-    <TextView
-        android:text="Score: 100 points"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/captured_total_score_view"
-        android:padding="16dp" />
+        android:text="Score: 100 points" />
 
 </LinearLayout>

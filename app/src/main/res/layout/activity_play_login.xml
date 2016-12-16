@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_play_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="website.bloop.app.activities.PlayLoginActivity">
 
     <view
+        android:id="@+id/sonarView"
+        class="website.bloop.app.views.SonarView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="website.bloop.app.views.SonarView"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:id="@+id/sonarView" />
+        android:layout_centerVertical="true" />
 
     <TextView
+        android:id="@+id/signInName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/signInName"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
 
     <Button
+        android:id="@+id/signInButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/signInButton"
-        android:text="@string/signin_button"
-        android:textAllCaps="false"
-        android:background="@drawable/common_google_signin_btn_text_light"
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:background="@drawable/common_google_signin_btn_text_light"
+        android:text="@string/signin_button"
+        android:textAllCaps="false" />
 
 </RelativeLayout>
 

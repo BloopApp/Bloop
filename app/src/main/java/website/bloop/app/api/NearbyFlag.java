@@ -19,7 +19,8 @@ public class NearbyFlag {
     @JsonProperty
     private int color;
 
-    public NearbyFlag() { }
+    public NearbyFlag() {
+    }
 
     public double getBloopFrequency() {
         return bloopFrequency;

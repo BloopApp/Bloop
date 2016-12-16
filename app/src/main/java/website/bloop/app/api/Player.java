@@ -22,7 +22,8 @@ public class Player {
         this.firebaseToken = firebaseToken;
     }
 
-    public Player() { }
+    public Player() {
+    }
 
     public String getName() {
         return name;

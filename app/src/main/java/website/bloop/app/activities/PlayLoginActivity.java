@@ -26,7 +26,6 @@ import io.reactivex.schedulers.Schedulers;
 import website.bloop.app.BloopApplication;
 import website.bloop.app.BloopFirebaseInstanceIDService;
 import website.bloop.app.R;
-import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.views.SonarView;
 
 import static website.bloop.app.BloopApplication.BLOOP_PREFERENCE_FILE;
@@ -158,6 +157,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
     /**
      * Attempt to reconnect to play services, or display error if connection fails.
+     *
      * @param connectionResult
      */
     @Override

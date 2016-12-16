@@ -27,7 +27,8 @@ public class OwnFlag {
         this.longitude = longitude;
     }
 
-    public OwnFlag() { }
+    public OwnFlag() {
+    }
 
     public Boolean getDoesExist() {
         return doesExist;

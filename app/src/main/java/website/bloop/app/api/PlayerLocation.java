@@ -30,7 +30,8 @@ public class PlayerLocation {
         this.longitude = location.getLongitude();
     }
 
-    public PlayerLocation() { }
+    public PlayerLocation() {
+    }
 
     public String getGooglePlayId() {
         return googlePlayId;

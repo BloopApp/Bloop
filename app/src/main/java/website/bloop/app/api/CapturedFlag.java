@@ -18,7 +18,8 @@ public class CapturedFlag {
         this.capturingPlayerId = capturingPlayerId;
     }
 
-    public CapturedFlag() { }
+    public CapturedFlag() {
+    }
 
     public long getFlagId() {
         return flagId;
