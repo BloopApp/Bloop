@@ -17,15 +17,19 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.Player;
 import com.google.example.games.basegameutils.BaseGameUtils;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import website.bloop.app.BloopApplication;
+import website.bloop.app.BloopFirebaseInstanceIDService;
 import website.bloop.app.R;
 import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.views.SonarView;
+
+import static website.bloop.app.BloopApplication.BLOOP_PREFERENCE_FILE;
 
 /**
  * Login authentication through Google Play Games
@@ -46,7 +50,7 @@ public class PlayLoginActivity extends AppCompatActivity
     private boolean mSignInClicked = false;
 
     private GoogleApiClient mGoogleApiClient;
-    private BloopAPIService mService;
+    private BloopApplication mApplication;
 
     @BindView(R.id.signInName)
     TextView loginText;
@@ -80,7 +84,7 @@ public class PlayLoginActivity extends AppCompatActivity
         // set to application (like singleton) so we can re-call it
         BloopApplication.getInstance().setGoogleApiClient(mGoogleApiClient);
 
-        mService = BloopApplication.getInstance().getService();
+        mApplication = BloopApplication.getInstance();
         SharedPreferences loginPref = getSharedPreferences(PREF_LOGIN, Context.MODE_PRIVATE);
         boolean loggedIn = loginPref.getBoolean(PREF_LOGIN_VAL, false);
 
@@ -107,19 +111,11 @@ public class PlayLoginActivity extends AppCompatActivity
 
             playerId = Games.Players.getCurrentPlayerId(mGoogleApiClient);
 
-            BloopApplication.getInstance().setPlayerName(displayName);
-            BloopApplication.getInstance().setPlayerId(playerId);
+            mApplication.setPlayerName(displayName);
+            mApplication.setPlayerId(playerId);
 
             website.bloop.app.api.Player player = new website.bloop.app.api.Player(displayName, playerId, null);
-
-            // TODO: move this to another class?
-            mService.addPlayer(player)
-                    .subscribeOn(Schedulers.newThread())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            responseBody -> {},
-                            throwable -> Log.e(TAG, throwable.getMessage())
-                    );
+            addUser(player);
         }
 
         // hide button on login
@@ -137,6 +133,23 @@ public class PlayLoginActivity extends AppCompatActivity
         newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(newIntent);
         finish();
+    }
+
+    private void addUser(website.bloop.app.api.Player player) {
+        SharedPreferences prefs = getSharedPreferences(BLOOP_PREFERENCE_FILE, Context.MODE_PRIVATE);
+        mApplication.getService().addPlayer(player)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        responseBody -> {
+                            String token = prefs.getString(BloopFirebaseInstanceIDService.PREF_FIREBASE_TOKEN, "");
+                            if (token.equals("")) {
+                                token = FirebaseInstanceId.getInstance().getToken();
+                            }
+                            mApplication.sendFirebaseRegistrationToServer(token);
+                        },
+                        throwable -> Log.e(TAG, throwable.getMessage())
+                );
     }
 
     @Override
