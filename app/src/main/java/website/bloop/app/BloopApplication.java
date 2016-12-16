@@ -1,14 +1,21 @@
 package website.bloop.app;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import website.bloop.app.api.APIPath;
 import website.bloop.app.api.BloopAPIService;
+import website.bloop.app.api.Player;
 
 /**
  * Application to store the Google services instance, as well as the Bloop services instance.
@@ -17,6 +24,7 @@ import website.bloop.app.api.BloopAPIService;
  */
 public class BloopApplication extends Application {
     private static BloopApplication mInstance = null;
+    private static final String TAG = "BloopApplicationClass";
     public static final String BLOOP_PREFERENCE_FILE = "BloopPrefs";
 
     private GoogleApiClient mGoogleApiClient;
@@ -73,5 +81,17 @@ public class BloopApplication extends Application {
                     .create(BloopAPIService.class);
         }
         return mService;
+    }
+
+    public void sendFirebaseRegistrationToServer(String token) {
+        Player player = new Player(null, getPlayerId(), token);
+
+        getService().updateFirebaseToken(player)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        responseBody -> {},
+                        throwable -> Log.e(TAG, throwable.getMessage())
+                );
     }
 }

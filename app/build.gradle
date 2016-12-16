@@ -62,6 +62,7 @@ dependencies {
 
     // Game utils
     compile project(':BaseGameUtils')
+    compile 'com.google.android.gms:play-services:10.0.1'
     compile 'com.google.android.gms:play-services-games:10.0.1'
     compile 'com.google.android.gms:play-services-plus:10.0.1'
 
@@ -83,8 +84,11 @@ dependencies {
     compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
 
     //firebase
+    compile 'com.google.firebase:firebase-core:10.0.1'
     compile 'com.google.firebase:firebase-messaging:10.0.1'
 
     // mappssss
     compile 'com.google.android.gms:play-services-maps:10.0.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
