@@ -1,7 +1,5 @@
 package website.bloop.app.views;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;

@@ -1,12 +1,9 @@
 package website.bloop.app;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;

@@ -26,7 +26,6 @@ import io.reactivex.schedulers.Schedulers;
 import website.bloop.app.BloopApplication;
 import website.bloop.app.BloopFirebaseInstanceIDService;
 import website.bloop.app.R;
-import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.views.SonarView;
 
 import static website.bloop.app.BloopApplication.BLOOP_PREFERENCE_FILE;
