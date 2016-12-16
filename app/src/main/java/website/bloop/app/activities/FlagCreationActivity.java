@@ -1,6 +1,7 @@
 package website.bloop.app.activities;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
@@ -139,16 +140,26 @@ public class FlagCreationActivity extends AppCompatActivity {
         mApplication.getService().placeFlag(newFlag)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(responseBody -> finish(), throwable -> {
-                    Log.e(TAG, throwable.getMessage());
-
-                    Toast.makeText(
-                            getBaseContext(),
-                            R.string.on_flag_placement_fail,
-                            Toast.LENGTH_LONG
-                    ).show();
+                .subscribe(responseBody -> {
+                    // tell parent activity that we placed a flag.
+                    Intent returnIntent = new Intent();
+                    setResult(Activity.RESULT_OK, returnIntent);
 
                     finish();
+                }, throwable -> {
+                        Log.e(TAG, throwable.getMessage());
+
+                        Toast.makeText(
+                                getBaseContext(),
+                                R.string.on_flag_placement_fail,
+                                Toast.LENGTH_LONG
+                        ).show();
+
+                        // Tell parent activity that we didn't place a flag.
+                        Intent returnIntent = new Intent();
+                        setResult(Activity.RESULT_CANCELED, returnIntent);
+
+                        finish();
                 });
     }
 

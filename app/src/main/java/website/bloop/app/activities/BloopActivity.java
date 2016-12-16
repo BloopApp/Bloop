@@ -1,5 +1,6 @@
 package website.bloop.app.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,9 +55,10 @@ public class BloopActivity extends AppCompatActivity {
     private static final String PREF_SOUND = "MutePREF";
     private static final String PREF_SOUND_VAL = "muted";
     private static final String TAG = "BloopActivity";
-    private static final String FLAG_CAPTURED_DIALOG_TAG = "FlagDialog";
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final int REQUEST_LEADERBOARD = 1000;
+    private static final String PREF_ACHIEVEMENT_TRACKER = "AchievementTrackerPREF";
+    private static final int PLACE_FLAG_ACTIVITY_RESULT = 123;
 
     private Location mCurrentLocation;
     private RxLocation mRxLocation;
@@ -117,6 +119,12 @@ public class BloopActivity extends AppCompatActivity {
         mApplication = BloopApplication.getInstance();
 
         mGoogleApiClient = mApplication.getGoogleApiClient();
+
+        // makes achievement dialogs visible
+        Games.setViewForPopups(
+                mGoogleApiClient,
+                getWindow().getDecorView().findViewById(android.R.id.content)
+        );
 
         mService = mApplication.getService();
 
@@ -260,6 +268,9 @@ public class BloopActivity extends AppCompatActivity {
                                 playerScore
                         );
 
+                        // trigger breaking ground if we haven't gotten it yet
+                        triggerAchievement(getString(R.string.achievement_breaking_ground));
+
                         flagCapturedDialog.setArguments(flagCapturedDialogBundle);
                         flagCapturedDialog.show(getSupportFragmentManager(), "FlagDialog");
 
@@ -269,6 +280,27 @@ public class BloopActivity extends AppCompatActivity {
                         mBigButtonView.hide();
                     });
         }
+    }
+
+    /**
+     * Triggers an achievement if the achievement hasn't been gotten yet (checks local prefs)
+     * @param achievementId the google play achievement id
+     */
+    private void triggerAchievement(String achievementId) {
+        SharedPreferences pref = getSharedPreferences(PREF_ACHIEVEMENT_TRACKER, Context.MODE_PRIVATE);
+        boolean haveAchievement = pref.getBoolean(achievementId, false);
+        // bail if we have it already
+        if (haveAchievement) {
+            return;
+        }
+
+        // if we haven't gotten it yet, get it now
+        Games.Achievements.unlock(mGoogleApiClient, achievementId);
+
+        // store this so we don't waste API calls the next time
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean(achievementId, true);
+        ed.apply();
     }
 
     private void deleteFlag() {
@@ -337,10 +369,22 @@ public class BloopActivity extends AppCompatActivity {
 
             final Intent placeFlagIntent = new Intent(this, FlagCreationActivity.class);
             placeFlagIntent.putExtra(FlagCreationActivity.FLAG_LOCATION, mCurrentLocation);
-            startActivity(placeFlagIntent);
+            startActivityForResult(placeFlagIntent, PLACE_FLAG_ACTIVITY_RESULT);
+        }
+        hidePlaceFlag();
+        mHasPlacedFlag = true;
+    }
 
-            hidePlaceFlag();
-            mHasPlacedFlag = true;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_FLAG_ACTIVITY_RESULT) {
+            if(resultCode == Activity.RESULT_OK){
+                hidePlaceFlag();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // just in case
+                showPlaceFlag();
+            }
         }
     }
 
