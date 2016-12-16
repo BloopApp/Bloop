@@ -98,6 +98,8 @@ public class BloopActivity extends AppCompatActivity {
     private BloopSoundPlayer mBloopSoundPlayer;
     private SharedPreferences mutePref;
     private boolean mute;
+    private boolean mFlagButtonIsShown;
+    private boolean mHasPlacedFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,14 +133,7 @@ public class BloopActivity extends AppCompatActivity {
         // TODO: this doesn't actually animate the fab far enough
         mPlaceFlagButton.setVisibility(View.INVISIBLE);
 
-        mService.checkHasPlacedFlag(mApplication.getPlayerId())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ownFlag -> {
-                    if (!ownFlag.getDoesExist()) {
-                        showPlaceFlag();
-                    }
-                }, throwable -> Log.e(TAG, throwable.getMessage()));
+        checkHasPlacedFlag();
 
         mPlaceFlagButton.setOnClickListener(view -> placeFlag());
 
@@ -166,6 +161,21 @@ public class BloopActivity extends AppCompatActivity {
         mute = mutePref.getBoolean(PREF_SOUND_VAL, false);
     }
 
+    private void checkHasPlacedFlag() {
+        mService.checkHasPlacedFlag(mApplication.getPlayerId())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ownFlag -> {
+                    if (!ownFlag.getDoesExist() && !mFlagButtonIsShown) {
+                        showPlaceFlag();
+                        mHasPlacedFlag = false;
+                    } else if (ownFlag.getDoesExist() && mFlagButtonIsShown) {
+                        hidePlaceFlag();
+                        mHasPlacedFlag = true;
+                    }
+                }, throwable -> Log.e(TAG, throwable.getMessage()));
+    }
+
     /**
      * Hide the fab and blocking the ability to place a flag.
      */
@@ -176,6 +186,8 @@ public class BloopActivity extends AppCompatActivity {
                 .setDuration(150)
                 .setInterpolator(PathInterpolatorCompat.create(0.4f, 0.0f, 0.6f, 1f))
                 .start();
+
+        mFlagButtonIsShown = false;
     }
 
     /**
@@ -198,6 +210,8 @@ public class BloopActivity extends AppCompatActivity {
                 .setDuration(150)
                 .setInterpolator(new LinearOutSlowInInterpolator())
                 .start();
+
+        mFlagButtonIsShown = true;
     }
 
     /**
@@ -357,6 +371,8 @@ public class BloopActivity extends AppCompatActivity {
             placeFlagIntent.putExtra(FlagCreationActivity.FLAG_LOCATION, mCurrentLocation);
             startActivityForResult(placeFlagIntent, PLACE_FLAG_ACTIVITY_RESULT);
         }
+        hidePlaceFlag();
+        mHasPlacedFlag = true;
     }
 
     @Override
@@ -388,10 +404,11 @@ public class BloopActivity extends AppCompatActivity {
                         if (playerName != null) {
                             // if player name is present, that means that there is a flag a
                             // capturable distance away
-                            // TODO: alert the user that they can capture this flag
                             mNearbyFlag = nearbyFlag;
 
-                            mBigButtonView.show();
+                            if (mHasPlacedFlag) {
+                                mBigButtonView.show();
+                            }
                         } else {
                             mNearbyFlag = null;
                             mBigButtonView.hide();
@@ -539,5 +556,7 @@ public class BloopActivity extends AppCompatActivity {
         if (mLocationDisposable == null || mLocationDisposable.isDisposed()) {
             startTrackingLocation();
         }
+
+        checkHasPlacedFlag();
     }
 }
