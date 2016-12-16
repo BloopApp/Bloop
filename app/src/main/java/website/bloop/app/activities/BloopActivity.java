@@ -273,12 +273,13 @@ public class BloopActivity extends AppCompatActivity {
     private void triggerAchievement(String achievementId) {
         SharedPreferences pref = getSharedPreferences(PREF_ACHIEVEMENT_TRACKER, Context.MODE_PRIVATE);
         boolean haveAchievement = pref.getBoolean(achievementId, false);
+        // bail if we have it already
         if (haveAchievement) {
             return;
         }
+
         // if we haven't gotten it yet, get it now
         Games.Achievements.unlock(mGoogleApiClient, achievementId);
-
 
         // store this so we don't waste API calls the next time
         SharedPreferences.Editor ed = pref.edit();
