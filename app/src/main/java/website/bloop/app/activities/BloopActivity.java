@@ -96,6 +96,7 @@ public class BloopActivity extends AppCompatActivity {
     private BloopSoundPlayer mBloopSoundPlayer;
     private SharedPreferences mutePref;
     private boolean mute;
+    private boolean mFlagButtonIsShown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,14 +124,7 @@ public class BloopActivity extends AppCompatActivity {
         // TODO: this doesn't actually animate the fab far enough
         mPlaceFlagButton.setVisibility(View.INVISIBLE);
 
-        mService.checkHasPlacedFlag(mApplication.getPlayerId())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ownFlag -> {
-                    if (!ownFlag.getDoesExist()) {
-                        showPlaceFlag();
-                    }
-                }, throwable -> Log.e(TAG, throwable.getMessage()));
+        checkHasPlacedFlag();
 
         mPlaceFlagButton.setOnClickListener(view -> placeFlag());
 
@@ -158,6 +152,19 @@ public class BloopActivity extends AppCompatActivity {
         mute = mutePref.getBoolean(PREF_SOUND_VAL, false);
     }
 
+    private void checkHasPlacedFlag() {
+        mService.checkHasPlacedFlag(mApplication.getPlayerId())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ownFlag -> {
+                    if (!ownFlag.getDoesExist() && !mFlagButtonIsShown) {
+                        showPlaceFlag();
+                    } else if (ownFlag.getDoesExist() && mFlagButtonIsShown) {
+                        hidePlaceFlag();
+                    }
+                }, throwable -> Log.e(TAG, throwable.getMessage()));
+    }
+
     /**
      * Hide the fab and blocking the ability to place a flag.
      */
@@ -168,6 +175,8 @@ public class BloopActivity extends AppCompatActivity {
                 .setDuration(150)
                 .setInterpolator(PathInterpolatorCompat.create(0.4f, 0.0f, 0.6f, 1f))
                 .start();
+
+        mFlagButtonIsShown = false;
     }
 
     /**
@@ -190,6 +199,8 @@ public class BloopActivity extends AppCompatActivity {
                 .setDuration(150)
                 .setInterpolator(new LinearOutSlowInInterpolator())
                 .start();
+
+        mFlagButtonIsShown = true;
     }
 
     /**
@@ -496,5 +507,7 @@ public class BloopActivity extends AppCompatActivity {
         if (mLocationDisposable == null || mLocationDisposable.isDisposed()) {
             startTrackingLocation();
         }
+
+        checkHasPlacedFlag();
     }
 }
