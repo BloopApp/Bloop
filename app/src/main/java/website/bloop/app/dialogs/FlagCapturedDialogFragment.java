@@ -1,7 +1,9 @@
 package website.bloop.app.dialogs;
 
 import android.app.Dialog;
+import android.media.SoundPool;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ public class FlagCapturedDialogFragment extends DialogFragment {
     public static final String ARG_TITLE = "DialogTitle";
     public static final String ARG_FLAG_COLOR = "DialogFlagColor";
     public static final String ARG_POINTS_TEXT = "DialogPointsText";
+    public static final String ARG_TOTAL_SCORE = "DialogTotalScore";
 
     @BindView(R.id.captured_title_view)
     TextView titleView;
@@ -27,7 +30,11 @@ public class FlagCapturedDialogFragment extends DialogFragment {
     @BindView(R.id.captured_points_view)
     TextView pointsView;
 
+    @BindView(R.id.captured_total_score_view)
+    TextView scoreView;
 
+
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -53,6 +60,9 @@ public class FlagCapturedDialogFragment extends DialogFragment {
 
         final String pointsText = arguments.getString(ARG_POINTS_TEXT);
         pointsView.setText(pointsText);
+
+        final String totalScore = arguments.getString(ARG_TOTAL_SCORE);
+        scoreView.setText(totalScore);
 
         return builder.create();
     }
