@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="@string/leaderboard_item"
-        android:id="@+id/item_leaderboard" />
-    <item android:title="@string/delete_flag_item"
-        android:id="@+id/item_delete" />
-    <item android:title="@string/mute_audio_item"
+    <item
+        android:id="@+id/item_leaderboard"
+        android:title="@string/leaderboard_item" />
+    <item
+        android:id="@+id/item_delete"
+        android:title="@string/delete_flag_item" />
+    <item
         android:id="@+id/item_mute"
-        android:checkable="true" />
-    <item android:title="@string/about_libraries_item"
-        android:id="@+id/item_about_libs" />
+        android:checkable="true"
+        android:title="@string/mute_audio_item" />
+    <item
+        android:id="@+id/item_about_libs"
+        android:title="@string/about_libraries_item" />
 </menu>

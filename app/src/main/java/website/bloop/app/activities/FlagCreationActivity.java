@@ -147,19 +147,19 @@ public class FlagCreationActivity extends AppCompatActivity {
 
                     finish();
                 }, throwable -> {
-                        Log.e(TAG, throwable.getMessage());
+                    Log.e(TAG, throwable.getMessage());
 
-                        Toast.makeText(
-                                getBaseContext(),
-                                R.string.on_flag_placement_fail,
-                                Toast.LENGTH_LONG
-                        ).show();
+                    Toast.makeText(
+                            getBaseContext(),
+                            R.string.on_flag_placement_fail,
+                            Toast.LENGTH_LONG
+                    ).show();
 
-                        // Tell parent activity that we didn't place a flag.
-                        Intent returnIntent = new Intent();
-                        setResult(Activity.RESULT_CANCELED, returnIntent);
+                    // Tell parent activity that we didn't place a flag.
+                    Intent returnIntent = new Intent();
+                    setResult(Activity.RESULT_CANCELED, returnIntent);
 
-                        finish();
+                    finish();
                 });
     }
 

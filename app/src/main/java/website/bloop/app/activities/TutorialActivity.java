@@ -48,6 +48,7 @@ public class TutorialActivity extends AppIntro {
 
     /**
      * Skip past the tutorial activity if pressed.
+     *
      * @param currentFragment
      */
     @Override
@@ -70,6 +71,7 @@ public class TutorialActivity extends AppIntro {
 
     /**
      * Do not do anything special on slide change.
+     *
      * @param oldFragment
      * @param newFragment
      */
@@ -101,6 +103,7 @@ public class TutorialActivity extends AppIntro {
 
     /**
      * Check if not first run, skip tutorial activity if so.
+     *
      * @param context
      * @return
      */

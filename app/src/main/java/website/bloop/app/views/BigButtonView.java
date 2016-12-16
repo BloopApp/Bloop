@@ -146,8 +146,9 @@ public class BigButtonView extends View {
 
         /**
          * Creates an animation for the button
+         *
          * @param bigButtonView
-         * @param grow whether the animation makes it bigger or smaller
+         * @param grow          whether the animation makes it bigger or smaller
          */
         BigButtonAnimation(BigButtonView bigButtonView, boolean grow) {
             mBigButtonView = bigButtonView;

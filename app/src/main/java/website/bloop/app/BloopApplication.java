@@ -87,7 +87,8 @@ public class BloopApplication extends Application {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        responseBody -> {},
+                        responseBody -> {
+                        },
                         throwable -> Log.e(TAG, throwable.getMessage())
                 );
     }

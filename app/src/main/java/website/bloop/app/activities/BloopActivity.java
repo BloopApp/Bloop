@@ -284,6 +284,7 @@ public class BloopActivity extends AppCompatActivity {
 
     /**
      * Triggers an achievement if the achievement hasn't been gotten yet (checks local prefs)
+     *
      * @param achievementId the google play achievement id
      */
     private void triggerAchievement(String achievementId) {
@@ -329,6 +330,7 @@ public class BloopActivity extends AppCompatActivity {
 
     /**
      * Request location permissions so we can track location.
+     *
      * @return
      */
     private Observable<Boolean> requestLocationPermissions() {
@@ -378,7 +380,7 @@ public class BloopActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_FLAG_ACTIVITY_RESULT) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 hidePlaceFlag();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
@@ -479,6 +481,7 @@ public class BloopActivity extends AppCompatActivity {
 
     /**
      * Inflate options dropdown, as well as set mute checkbox to preexisting value, if one available.
+     *
      * @param menu
      * @return
      */
@@ -495,6 +498,7 @@ public class BloopActivity extends AppCompatActivity {
 
     /**
      * Show leaderboards, mute audio, show library information.
+     *
      * @param item
      * @return
      */

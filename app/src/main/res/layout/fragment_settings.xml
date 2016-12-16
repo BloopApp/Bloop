@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark">
+    android:background="@color/colorPrimaryDark"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/leaderboard_text"
@@ -14,11 +15,11 @@
         android:id="@+id/sign_out_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/signout_button"
-        android:textAllCaps="false"
-        android:background="@drawable/common_google_signin_btn_text_light"
         android:layout_below="@+id/leaderboard_text"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="98dp" />
+        android:layout_marginTop="98dp"
+        android:background="@drawable/common_google_signin_btn_text_light"
+        android:text="@string/signout_button"
+        android:textAllCaps="false" />
 
 </RelativeLayout>

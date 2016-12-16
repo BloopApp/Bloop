@@ -50,17 +50,15 @@
 
         <activity android:name=".activities.FlagCreationActivity" />
 
-        <service
-            android:name=".BloopFirebaseMessagingService">
+        <service android:name=".BloopFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <service
-            android:name=".BloopFirebaseInstanceIDService">
+        <service android:name=".BloopFirebaseInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 

@@ -157,6 +157,7 @@ public class PlayLoginActivity extends AppCompatActivity
 
     /**
      * Attempt to reconnect to play services, or display error if connection fails.
+     *
      * @param connectionResult
      */
     @Override
