@@ -13,6 +13,9 @@ import android.view.animation.Transformation;
 
 import website.bloop.app.R;
 
+/**
+ * Big bloop/button drawn on screen to show to a user they are close enough to capture another flag.
+ */
 public class BigButtonView extends View {
     private Paint mButtonPrimary;
     private float mRadiusCoef;
@@ -132,6 +135,9 @@ public class BigButtonView extends View {
         setAnimation(animation);
     }
 
+    /**
+     * Animates the showing of the caputre bloop/button.
+     */
     private class BigButtonAnimation extends Animation {
         private BigButtonView mBigButtonView;
 

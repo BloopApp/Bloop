@@ -1,6 +1,5 @@
 package website.bloop.app.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,14 +9,15 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v4.view.animation.PathInterpolatorCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
@@ -37,19 +37,24 @@ import website.bloop.app.BloopApplication;
 import website.bloop.app.R;
 import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.api.CapturedFlag;
+import website.bloop.app.api.NearbyFlag;
 import website.bloop.app.api.PlayerLocation;
+import website.bloop.app.dialogs.FlagCapturedDialogFragment;
 import website.bloop.app.fragments.BootprintMapFragment;
 import website.bloop.app.sound.BloopSoundPlayer;
 import website.bloop.app.views.BigButtonView;
+import website.bloop.app.views.FlagView;
 import website.bloop.app.views.SonarView;
 
 /**
- *
+ * Main game activity, which shows bloop animations and sounds, as well as controls
+ * game interaction such as capturing bloops or checking the leaderboards.
  */
 public class BloopActivity extends AppCompatActivity {
     private static final String PREF_SOUND = "MutePREF";
     private static final String PREF_SOUND_VAL = "muted";
     private static final String TAG = "BloopActivity";
+    private static final String FLAG_CAPTURED_DIALOG_TAG = "FlagDialog";
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final int REQUEST_LEADERBOARD = 1000;
 
@@ -82,8 +87,7 @@ public class BloopActivity extends AppCompatActivity {
     private long mLastBloopTime;
     private Runnable mBloopRunnable;
 
-    private long mNearbyFlagId;
-    private String mNearbyFlagOwner;
+    private NearbyFlag mNearbyFlag;
 
     private GoogleApiClient mGoogleApiClient;
     private BloopAPIService mService;
@@ -117,7 +121,7 @@ public class BloopActivity extends AppCompatActivity {
         // hide flag by default
         mPlaceFlagButtonMarginBottom = getResources().getDimension(R.dimen.fab_margin);
         // TODO: this doesn't actually animate the fab far enough
-        mPlaceFlagButton.setTranslationY(mPlaceFlagButton.getHeight() + mPlaceFlagButtonMarginBottom);
+        mPlaceFlagButton.setVisibility(View.INVISIBLE);
 
         mService.checkHasPlacedFlag(mApplication.getPlayerId())
                 .subscribeOn(Schedulers.newThread())
@@ -154,6 +158,9 @@ public class BloopActivity extends AppCompatActivity {
         mute = mutePref.getBoolean(PREF_SOUND_VAL, false);
     }
 
+    /**
+     * Hide the fab and blocking the ability to place a flag.
+     */
     private void hidePlaceFlag() {
         mPlaceFlagButton
                 .animate()
@@ -163,7 +170,20 @@ public class BloopActivity extends AppCompatActivity {
                 .start();
     }
 
+    /**
+     * Show the fab and add the ability to place a flag.
+     */
     private void showPlaceFlag() {
+        // if we have set the visibility to invisible (as we do in onCreate), we should put this
+        // below the screen
+        if (mPlaceFlagButton.getVisibility() == View.INVISIBLE) {
+            mPlaceFlagButton.setTranslationY(
+                    mPlaceFlagButton.getHeight() + mPlaceFlagButtonMarginBottom
+            );
+
+            mPlaceFlagButton.setVisibility(View.VISIBLE);
+        }
+
         mPlaceFlagButton
                 .animate()
                 .translationY(0)
@@ -172,13 +192,17 @@ public class BloopActivity extends AppCompatActivity {
                 .start();
     }
 
+    /**
+     * Draw a different bloop over the main bloops to prompt the user to click and capture a flag.
+     */
     private void captureFlag() {
-        if (mNearbyFlagId != 0) {
-            CapturedFlag flag = new CapturedFlag(mNearbyFlagId, mApplication.getPlayerId());
+        if (mNearbyFlag != null) {
+            CapturedFlag flag = new CapturedFlag(
+                    mNearbyFlag.getFlagId(),
+                    mApplication.getPlayerId()
+            );
 
-            String requestedFlagOwner = mNearbyFlagOwner;
-
-            Activity self = this;
+            // TODO: slowly mute the boop sounds so the bloop is better
 
             mService.captureFlag(flag)
                     .subscribeOn(Schedulers.newThread())
@@ -189,22 +213,65 @@ public class BloopActivity extends AppCompatActivity {
                             mBloopSoundPlayer.bloop();
                         }
 
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(self);
-                        builder.setTitle(String.format(getString(R.string.you_captured_x_flag_format_string), requestedFlagOwner))
-                                .setMessage("Add one more to that collection")
-                                .setNeutralButton(
-                                        getString(R.string.dismiss_capture_flag_dialog_text),
-                                        (dialogInterface, i) -> dialogInterface.dismiss())
-                                .show();
+                        final FlagView flagView = new FlagView(getBaseContext());
+                        flagView.setFlagColor(mNearbyFlag.getColor());
+
+                        final FlagCapturedDialogFragment flagCapturedDialog = new FlagCapturedDialogFragment();
+                        final Bundle flagCapturedDialogBundle = new Bundle();
+                        flagCapturedDialogBundle.putString(
+                                FlagCapturedDialogFragment.ARG_TITLE,
+                                String.format(getString(R.string.you_captured_x_flag_format_string), mNearbyFlag.getPlayerName())
+                        );
+
+                        flagCapturedDialogBundle.putInt(
+                                FlagCapturedDialogFragment.ARG_FLAG_COLOR,
+                                mNearbyFlag.getColor()
+                        );
+
+                        flagCapturedDialogBundle.putString(
+                                FlagCapturedDialogFragment.ARG_POINTS_TEXT,
+                                "Flag capture: +1 point"
+                        );
+
+                        final int playerScore = 1; // TODO: from API
+
+                        flagCapturedDialogBundle.putString(
+                                FlagCapturedDialogFragment.ARG_TOTAL_SCORE,
+                                "Score: " + playerScore
+                        );
+
+                        Games.Leaderboards.submitScore(
+                                mGoogleApiClient,
+                                getString(R.string.leaderboard_bloop_high_scores),
+                                playerScore
+                        );
+
+                        flagCapturedDialog.setArguments(flagCapturedDialogBundle);
+                        flagCapturedDialog.show(getSupportFragmentManager(), "FlagDialog");
+
                         mBigButtonView.hide();
                     }, throwable -> {
+                        Log.e(TAG, throwable.getMessage());
                         mBigButtonView.hide();
                     });
         }
     }
 
+    private void deleteFlag() {
+        mService.deleteFlag(mApplication.getPlayerId())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ownFlag -> {
+                    Toast.makeText(this, "Flag deleted", Toast.LENGTH_SHORT).show();
+                }, throwable -> {
+                    Log.e(TAG, throwable.getMessage());
+                });
+
+        showPlaceFlag();
+    }
+
     /**
-     * Shows an activity that describes the open source libraries used in this project
+     * Shows an activity that describes the open source libraries used in this project.
      */
     private void startAboutLibraries() {
         new LibsBuilder()
@@ -214,6 +281,10 @@ public class BloopActivity extends AppCompatActivity {
                 .start(this);
     }
 
+    /**
+     * Request location permissions so we can track location.
+     * @return
+     */
     private Observable<Boolean> requestLocationPermissions() {
         return RxPermissions.getInstance(this)
                 .request(android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -222,6 +293,9 @@ public class BloopActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Main location tracking logic.
+     */
     private void startTrackingLocation() {
         Log.d(TAG, "Location tracking started");
 
@@ -233,7 +307,6 @@ public class BloopActivity extends AppCompatActivity {
         // this should never be called if the permission hasn't been granted.
         //noinspection MissingPermission
         mLocationDisposable = mRxLocation.location().updates(locationRequest)
-                //TODO: we might want to clean this data before passing it on
                 .doOnEach(location -> mCurrentLocation = location.getValue())
                 .doOnEach(location -> mBootprintMapFragment.updateMapCenter(location.getValue()))
                 .doOnEach(location -> mBootprintMapFragment.updatePlayerLocation(location.getValue()))
@@ -241,16 +314,24 @@ public class BloopActivity extends AppCompatActivity {
                 .subscribe();
     }
 
+    /**
+     * Lets a user customize and place a flag at their current location.
+     * Passes intent to FlagCreationActivity.
+     */
     private void placeFlag() {
         if (mCurrentLocation != null) {
-            // TODO organize bloop and placing flag better
 
             final Intent placeFlagIntent = new Intent(this, FlagCreationActivity.class);
             placeFlagIntent.putExtra(FlagCreationActivity.FLAG_LOCATION, mCurrentLocation);
             startActivity(placeFlagIntent);
+
+            hidePlaceFlag();
         }
     }
 
+    /**
+     * Check with server to compute closest flag and update how often bloops are animated on-screen.
+     */
     private void updateBloopFrequency() {
         if (mCurrentLocation != null) {
             mService.getNearestFlag(
@@ -265,13 +346,11 @@ public class BloopActivity extends AppCompatActivity {
                             // if player name is present, that means that there is a flag a
                             // capturable distance away
                             // TODO: alert the user that they can capture this flag
-                            mNearbyFlagId = nearbyFlag.getFlagId();
-                            mNearbyFlagOwner = nearbyFlag.getPlayerName();
+                            mNearbyFlag = nearbyFlag;
 
                             mBigButtonView.show();
                         } else {
-                            mNearbyFlagId = 0; // this is the "null" value of the flag id
-                            mNearbyFlagOwner = null;
+                            mNearbyFlag = null;
                             mBigButtonView.hide();
                         }
 
@@ -280,6 +359,9 @@ public class BloopActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Actually reschedule the "timer" to redraw a bloop on screen.
+     */
     private void rescheduleBloops() {
         double timeSinceLastBloop = (double) (System.currentTimeMillis() - mLastBloopTime);
 
@@ -323,6 +405,9 @@ public class BloopActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * BLOOP!!!
+     */
     private void bloop() {
         mSonarView.bloop();
         if (!mute) {
@@ -332,6 +417,11 @@ public class BloopActivity extends AppCompatActivity {
         mLastBloopTime = System.currentTimeMillis();
     }
 
+    /**
+     * Inflate options dropdown, as well as set mute checkbox to preexisting value, if one available.
+     * @param menu
+     * @return
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.bloop_activity_menu, menu);
@@ -343,6 +433,11 @@ public class BloopActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Show leaderboards, mute audio, show library information.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -355,6 +450,9 @@ public class BloopActivity extends AppCompatActivity {
                         ),
                         REQUEST_LEADERBOARD
                 );
+                return true;
+            case R.id.item_delete:
+                deleteFlag();
                 return true;
             case R.id.item_mute:
                 SharedPreferences.Editor ed = mutePref.edit();

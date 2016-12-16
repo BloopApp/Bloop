@@ -18,7 +18,9 @@ import website.bloop.app.api.BloopAPIService;
 import website.bloop.app.api.Player;
 
 /**
- *
+ * Application to store the Google services instance, as well as the Bloop services instance.
+ * Includes misc other methods to make player getting and similar easier for other classes/methods.
+ * Functions similarly to a singleton.
  */
 public class BloopApplication extends Application {
     private static BloopApplication mInstance = null;

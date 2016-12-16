@@ -90,8 +90,6 @@ public class PlayLoginActivity extends AppCompatActivity
 
         if (loggedIn) {
             mGoogleApiClient.connect();
-
-            // TODO move things to service
         }
 
         loginButton.setOnClickListener(view -> signInClicked());
@@ -158,6 +156,10 @@ public class PlayLoginActivity extends AppCompatActivity
         mGoogleApiClient.connect();
     }
 
+    /**
+     * Attempt to reconnect to play services, or display error if connection fails.
+     * @param connectionResult
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         if (mResolvingConnectionFailure) {
@@ -201,7 +203,9 @@ public class PlayLoginActivity extends AppCompatActivity
         }
     }
 
-    // Call when the sign-in button is clicked
+    /**
+     * Call when the sign-in button is clicked.
+     */
     public void signInClicked() {
         bloopView.bloop();
         mSignInClicked = true;

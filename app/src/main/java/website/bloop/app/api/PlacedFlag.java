@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * POJO for placing flags.
  */
-
 public class PlacedFlag {
     @JsonProperty
     private String googlePlayId;
@@ -28,7 +27,8 @@ public class PlacedFlag {
         this.color = color;
     }
 
-    public PlacedFlag() { }
+    public PlacedFlag() {
+    }
 
     public String getGooglePlayId() {
         return googlePlayId;
@@ -60,5 +60,10 @@ public class PlacedFlag {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    @Override
+    public String toString() {
+        return "PlacedFlag: " + getGooglePlayId() + " placed a flag with color " + getColor() + " at " + getLatitude() + ", " + getLongitude();
     }
 }

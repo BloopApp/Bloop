@@ -8,6 +8,10 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import static website.bloop.app.BloopApplication.BLOOP_PREFERENCE_FILE;
 
+/**
+ * Firebase ID service which is used for push notifications and registering this app instance
+ * with Firebase.
+ */
 public class BloopFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     private static final String TAG = "BloopFirebaseIIDService";

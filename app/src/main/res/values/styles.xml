@@ -10,5 +10,6 @@
 
     <declare-styleable name="FlagView">
         <attr name="showPole" format="boolean" />
+        <attr name="flagColor" format="color" />
     </declare-styleable>
 </resources>
