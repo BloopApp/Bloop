@@ -1,5 +1,6 @@
 package website.bloop.app.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -58,7 +59,7 @@ public class BloopActivity extends AppCompatActivity {
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final int REQUEST_LEADERBOARD = 1000;
     private static final String PREF_ACHIEVEMENT_TRACKER = "AchievementTrackerPREF";
-    private static final String PREF_ACHIEVEMENT_BREAKING_GROUND = "HaveBreakingGround";
+    private static final int PLACE_FLAG_ACTIVITY_RESULT = 123;
 
     private Location mCurrentLocation;
     private RxLocation mRxLocation;
@@ -347,9 +348,20 @@ public class BloopActivity extends AppCompatActivity {
 
             final Intent placeFlagIntent = new Intent(this, FlagCreationActivity.class);
             placeFlagIntent.putExtra(FlagCreationActivity.FLAG_LOCATION, mCurrentLocation);
-            startActivityForResult(placeFlagIntent, 1);
+            startActivityForResult(placeFlagIntent, PLACE_FLAG_ACTIVITY_RESULT);
+        }
+    }
 
-            hidePlaceFlag();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_FLAG_ACTIVITY_RESULT) {
+            if(resultCode == Activity.RESULT_OK){
+                hidePlaceFlag();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                // just in case
+                showPlaceFlag();
+            }
         }
     }
 
