@@ -27,22 +27,22 @@ public class TutorialActivity extends AppIntro {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // second content: drop flag
+        // first content: place
         addSlide(AppIntroFragment.newInstance("Place your first flag",
                 "Jump into playing by dropping your flag. Finding a secluded spot is key!",
-                R.drawable.ic_bloop_flag_placed_icon,
-                ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary)));
-
-        // first content: change flag
-        addSlide(AppIntroFragment.newInstance("Create your flag",
-                "When you place your flag, you get a chance to customize it. Remember, others will see this!",
-                R.drawable.landscape,
+                R.drawable.tutorial1_achieve,
                 ContextCompat.getColor(getApplicationContext(), R.color.colorSky)));
 
-        // third content: capture flag
+        // second content: change
+        addSlide(AppIntroFragment.newInstance("Create your flag",
+                "When you place your flag, customize it by clicking the color. Remember, others will see this!",
+                R.drawable.tutorial2_color,
+                ContextCompat.getColor(getApplicationContext(), R.color.colorSky)));
+
+        // third content: capture
         addSlide(AppIntroFragment.newInstance("Find and capture flags",
                 "Now go on the offensive! Follow the \"bloop\" sounds to find other players' flags. The more often you see the bloops, the closer you are. Happy hunting!",
-                R.drawable.landscape,
+                R.drawable.tutorial3_overview,
                 ContextCompat.getColor(getApplicationContext(), R.color.colorSky)));
     }
 
