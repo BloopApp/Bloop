@@ -164,9 +164,6 @@ public class FlagCreationActivity extends AppCompatActivity {
                 .density(12)
                 .setOnColorSelectedListener(this::setFlagColor)
                 .setPositiveButton("ok", (dialog, selectedColor, allColors) -> setFlagColor(selectedColor))
-                .setNegativeButton("cancel", (dialog, which) -> {
-                    // nothing
-                })
                 .noSliders()
                 .build()
                 .show();
