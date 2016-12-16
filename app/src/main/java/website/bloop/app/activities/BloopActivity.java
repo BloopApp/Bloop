@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.achievement.Achievement;
 import com.google.android.gms.location.LocationRequest;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -58,7 +57,6 @@ public class BloopActivity extends AppCompatActivity {
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final int REQUEST_LEADERBOARD = 1000;
     private static final String PREF_ACHIEVEMENT_TRACKER = "AchievementTrackerPREF";
-    private static final String PREF_ACHIEVEMENT_BREAKING_GROUND = "HaveBreakingGround";
 
     private Location mCurrentLocation;
     private RxLocation mRxLocation;
@@ -117,6 +115,12 @@ public class BloopActivity extends AppCompatActivity {
         mApplication = BloopApplication.getInstance();
 
         mGoogleApiClient = mApplication.getGoogleApiClient();
+
+        // makes achievement dialogs visible
+        Games.setViewForPopups(
+                mGoogleApiClient,
+                getWindow().getDecorView().findViewById(android.R.id.content)
+        );
 
         mService = mApplication.getService();
 
@@ -274,6 +278,7 @@ public class BloopActivity extends AppCompatActivity {
         }
         // if we haven't gotten it yet, get it now
         Games.Achievements.unlock(mGoogleApiClient, achievementId);
+
 
         // store this so we don't waste API calls the next time
         SharedPreferences.Editor ed = pref.edit();
