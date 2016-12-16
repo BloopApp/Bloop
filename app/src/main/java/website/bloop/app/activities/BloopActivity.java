@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.achievement.Achievement;
 import com.google.android.gms.location.LocationRequest;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -54,9 +55,10 @@ public class BloopActivity extends AppCompatActivity {
     private static final String PREF_SOUND = "MutePREF";
     private static final String PREF_SOUND_VAL = "muted";
     private static final String TAG = "BloopActivity";
-    private static final String FLAG_CAPTURED_DIALOG_TAG = "FlagDialog";
     private static final long LOCATION_UPDATE_MS = 5000;
     private static final int REQUEST_LEADERBOARD = 1000;
+    private static final String PREF_ACHIEVEMENT_TRACKER = "AchievementTrackerPREF";
+    private static final String PREF_ACHIEVEMENT_BREAKING_GROUND = "HaveBreakingGround";
 
     private Location mCurrentLocation;
     private RxLocation mRxLocation;
@@ -246,6 +248,9 @@ public class BloopActivity extends AppCompatActivity {
                                 playerScore
                         );
 
+                        // trigger breaking ground if we haven't gotten it yet
+                        triggerAchievement(getString(R.string.achievement_breaking_ground));
+
                         flagCapturedDialog.setArguments(flagCapturedDialogBundle);
                         flagCapturedDialog.show(getSupportFragmentManager(), "FlagDialog");
 
@@ -255,6 +260,25 @@ public class BloopActivity extends AppCompatActivity {
                         mBigButtonView.hide();
                     });
         }
+    }
+
+    /**
+     * Triggers an achievement if the achievement hasn't been gotten yet (checks local prefs)
+     * @param achievementId the google play achievement id
+     */
+    private void triggerAchievement(String achievementId) {
+        SharedPreferences pref = getSharedPreferences(PREF_ACHIEVEMENT_TRACKER, Context.MODE_PRIVATE);
+        boolean haveAchievement = pref.getBoolean(achievementId, false);
+        if (haveAchievement) {
+            return;
+        }
+        // if we haven't gotten it yet, get it now
+        Games.Achievements.unlock(mGoogleApiClient, achievementId);
+
+        // store this so we don't waste API calls the next time
+        SharedPreferences.Editor ed = pref.edit();
+        ed.putBoolean(achievementId, true);
+        ed.apply();
     }
 
     private void deleteFlag() {
