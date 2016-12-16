@@ -97,6 +97,7 @@ public class BloopActivity extends AppCompatActivity {
     private SharedPreferences mutePref;
     private boolean mute;
     private boolean mFlagButtonIsShown;
+    private boolean mHasPlacedFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,8 +160,10 @@ public class BloopActivity extends AppCompatActivity {
                 .subscribe(ownFlag -> {
                     if (!ownFlag.getDoesExist() && !mFlagButtonIsShown) {
                         showPlaceFlag();
+                        mHasPlacedFlag = false;
                     } else if (ownFlag.getDoesExist() && mFlagButtonIsShown) {
                         hidePlaceFlag();
+                        mHasPlacedFlag = true;
                     }
                 }, throwable -> Log.e(TAG, throwable.getMessage()));
     }
@@ -337,6 +340,7 @@ public class BloopActivity extends AppCompatActivity {
             startActivity(placeFlagIntent);
 
             hidePlaceFlag();
+            mHasPlacedFlag = true;
         }
     }
 
@@ -356,10 +360,11 @@ public class BloopActivity extends AppCompatActivity {
                         if (playerName != null) {
                             // if player name is present, that means that there is a flag a
                             // capturable distance away
-                            // TODO: alert the user that they can capture this flag
                             mNearbyFlag = nearbyFlag;
 
-                            mBigButtonView.show();
+                            if (mHasPlacedFlag) {
+                                mBigButtonView.show();
+                            }
                         } else {
                             mNearbyFlag = null;
                             mBigButtonView.hide();
