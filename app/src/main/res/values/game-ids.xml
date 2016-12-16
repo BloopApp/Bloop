@@ -4,6 +4,7 @@ Google Play game services IDs.
 Save this file as res/values/games-ids.xml in your project.
 -->
 <resources>
+    <string name="package_name">website.bloop.app</string>
     <string name="achievement_breaking_ground">CgkIo_G91-QfEAIQAg</string>
     <string name="achievement_going_somewhere">CgkIo_G91-QfEAIQAw</string>
     <string name="achievement_hattrick">CgkIo_G91-QfEAIQBA</string>
