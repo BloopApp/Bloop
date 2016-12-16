@@ -230,7 +230,20 @@ public class BloopActivity extends AppCompatActivity {
 
                         flagCapturedDialogBundle.putString(
                                 FlagCapturedDialogFragment.ARG_POINTS_TEXT,
-                                "+1 point"
+                                "Flag capture: +1 point"
+                        );
+
+                        final int playerScore = 1; // TODO: from API
+
+                        flagCapturedDialogBundle.putString(
+                                FlagCapturedDialogFragment.ARG_TOTAL_SCORE,
+                                "Score: " + playerScore
+                        );
+
+                        Games.Leaderboards.submitScore(
+                                mGoogleApiClient,
+                                getString(R.string.leaderboard_bloop_high_scores),
+                                playerScore
                         );
 
                         flagCapturedDialog.setArguments(flagCapturedDialogBundle);
