@@ -347,7 +347,7 @@ public class BloopActivity extends AppCompatActivity {
 
             final Intent placeFlagIntent = new Intent(this, FlagCreationActivity.class);
             placeFlagIntent.putExtra(FlagCreationActivity.FLAG_LOCATION, mCurrentLocation);
-            startActivity(placeFlagIntent);
+            startActivityForResult(placeFlagIntent, 1);
 
             hidePlaceFlag();
         }
