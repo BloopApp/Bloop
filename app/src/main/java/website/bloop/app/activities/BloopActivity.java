@@ -22,7 +22,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.achievement.Achievement;
 import com.google.android.gms.location.LocationRequest;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -118,6 +117,12 @@ public class BloopActivity extends AppCompatActivity {
         mApplication = BloopApplication.getInstance();
 
         mGoogleApiClient = mApplication.getGoogleApiClient();
+
+        // makes achievement dialogs visible
+        Games.setViewForPopups(
+                mGoogleApiClient,
+                getWindow().getDecorView().findViewById(android.R.id.content)
+        );
 
         mService = mApplication.getService();
 
@@ -270,9 +275,11 @@ public class BloopActivity extends AppCompatActivity {
     private void triggerAchievement(String achievementId) {
         SharedPreferences pref = getSharedPreferences(PREF_ACHIEVEMENT_TRACKER, Context.MODE_PRIVATE);
         boolean haveAchievement = pref.getBoolean(achievementId, false);
+        // bail if we have it already
         if (haveAchievement) {
             return;
         }
+
         // if we haven't gotten it yet, get it now
         Games.Achievements.unlock(mGoogleApiClient, achievementId);
 
