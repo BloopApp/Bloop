@@ -6,10 +6,6 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 /**
- * TODO: Add a class header comment!
- */
-
-/**
  * Push notification logic with Firebase.
  */
 public class BloopFirebaseMessagingService extends FirebaseMessagingService {
