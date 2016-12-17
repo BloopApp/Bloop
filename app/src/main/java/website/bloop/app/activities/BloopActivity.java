@@ -233,6 +233,8 @@ public class BloopActivity extends AppCompatActivity {
             );
 
             // TODO: slowly mute the boop sounds so the bloop is better
+            mBloopFrequency = 0;
+            rescheduleBloops();
 
             mService.captureFlag(flag)
                     .subscribeOn(Schedulers.newThread())
