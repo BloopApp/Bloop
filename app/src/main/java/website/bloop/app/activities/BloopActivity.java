@@ -52,6 +52,8 @@ import website.bloop.app.views.SonarView;
  * game interaction such as capturing bloops or checking the leaderboards.
  */
 public class BloopActivity extends AppCompatActivity {
+    public static final String ARG_OPPONENT = "ArgOpponentName";
+
     private static final String PREF_SOUND = "MutePREF";
     private static final String PREF_SOUND_VAL = "muted";
     private static final String TAG = "BloopActivity";
@@ -142,11 +144,7 @@ public class BloopActivity extends AppCompatActivity {
         // init location
         mRxLocation = new RxLocation(this);
 
-        requestLocationPermissions().subscribe(granted -> {
-            if (granted) {
-                startTrackingLocation();
-            }
-        });
+        startTrackingLocation();
 
         // init blooping
         mBloopHandler = new Handler();
@@ -343,21 +341,27 @@ public class BloopActivity extends AppCompatActivity {
      * Main location tracking logic.
      */
     private void startTrackingLocation() {
-        Log.d(TAG, "Location tracking started");
+        requestLocationPermissions().subscribe(granted -> {
+            if (!granted) {
+                // TODO: launch dialog telling them why
+                Log.d(TAG, "Location permissions denied");
+            } else {
+                Log.d(TAG, "Location tracking started");
 
-        // Request location now that we know we have permission to do so
-        LocationRequest locationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(LOCATION_UPDATE_MS);
+                // Request location now that we know we have permission to do so
+                LocationRequest locationRequest = LocationRequest.create()
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setInterval(LOCATION_UPDATE_MS);
 
-        // this should never be called if the permission hasn't been granted.
-        //noinspection MissingPermission
-        mLocationDisposable = mRxLocation.location().updates(locationRequest)
-                .doOnEach(location -> mCurrentLocation = location.getValue())
-                .doOnEach(location -> mBootprintMapFragment.updateMapCenter(location.getValue()))
-                .doOnEach(location -> mBootprintMapFragment.updatePlayerLocation(location.getValue()))
-                .doOnEach(location -> updateBloopFrequency())
-                .subscribe();
+                //noinspection MissingPermission
+                mLocationDisposable = mRxLocation.location().updates(locationRequest)
+                        .doOnEach(location -> mCurrentLocation = location.getValue())
+                        .doOnEach(location -> mBootprintMapFragment.updateMapCenter(location.getValue()))
+                        .doOnEach(location -> mBootprintMapFragment.updatePlayerLocation(location.getValue()))
+                        .doOnEach(location -> updateBloopFrequency())
+                        .subscribe();
+            }
+        });
     }
 
     /**
@@ -558,5 +562,16 @@ public class BloopActivity extends AppCompatActivity {
         }
 
         checkHasPlacedFlag();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Bundle extras = intent.getExtras();
+
+        if (extras.containsKey(ARG_OPPONENT)) {
+            final String opponentName = extras.getString(ARG_OPPONENT);
+
+
+        }
     }
 }
