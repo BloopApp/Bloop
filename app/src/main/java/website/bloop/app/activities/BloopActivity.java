@@ -595,7 +595,7 @@ public class BloopActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         Bundle extras = intent.getExtras();
 
-        if (extras.containsKey(ARG_OPPONENT)) {
+        if (extras != null && extras.containsKey(ARG_OPPONENT)) {
             final String opponentName = extras.getString(ARG_OPPONENT);
 
             opponentCapturedPlayerFlag(opponentName);
