@@ -395,10 +395,10 @@ public class BloopActivity extends AppCompatActivity {
         }
     }
 
-    private void opponentCapturedPlayerFlag(String playerName) {
+    private void opponentCapturedPlayerFlag(String opponentNameAndText) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         // TODO: put this in strings file.
-        builder.setTitle("Your flag was captured by " + playerName)
+        builder.setTitle(opponentNameAndText) // TODO: when Sam sends me the actual name, change this
                 .setNeutralButton("OK", (dialogInterface, i) -> {
                     dialogInterface.dismiss();
                 })
@@ -585,7 +585,7 @@ public class BloopActivity extends AppCompatActivity {
         if (extras.containsKey(ARG_OPPONENT)) {
             final String opponentName = extras.getString(ARG_OPPONENT);
 
-
+            opponentCapturedPlayerFlag(opponentName);
         }
     }
 }

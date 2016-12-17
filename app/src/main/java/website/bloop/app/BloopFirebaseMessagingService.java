@@ -20,14 +20,14 @@ public class BloopFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        if (remoteMessage.getData().size() > 0) {
+        if (remoteMessage.getNotification() != null) {
             Log.i(TAG, "Message data: " + remoteMessage.getData());
             Log.i(TAG, "Message body: " + remoteMessage.getNotification().getBody());
 
 
             Intent intent = new Intent(this, BloopActivity.class);
 
-            intent.addFlags (FLAG_ACTIVITY_SINGLE_TOP);
+            intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP);
             intent.putExtra(ARG_OPPONENT, remoteMessage.getNotification().getBody());
 
             startActivity(intent);
