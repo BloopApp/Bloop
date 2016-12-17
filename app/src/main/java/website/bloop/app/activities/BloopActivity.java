@@ -1,9 +1,7 @@
 package website.bloop.app.activities;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -21,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -82,6 +81,9 @@ public class BloopActivity extends AppCompatActivity {
     FloatingActionButton mPlaceFlagButton;
     private float mPlaceFlagButtonMarginBottom; // for animation
 
+    @BindView(R.id.cannot_capture_text_view)
+    TextView mCannotCaptureTextView;
+
     @BindView(R.id.main_toolbar)
     Toolbar mToolbar;
 
@@ -135,8 +137,9 @@ public class BloopActivity extends AppCompatActivity {
 
         // hide flag by default
         mPlaceFlagButtonMarginBottom = getResources().getDimension(R.dimen.fab_margin);
-        // TODO: this doesn't actually animate the fab far enough
         mPlaceFlagButton.setVisibility(View.INVISIBLE);
+        // also hide text telling user to place flags
+        mCannotCaptureTextView.setVisibility(View.INVISIBLE);
 
         checkHasPlacedFlag();
 
@@ -188,6 +191,8 @@ public class BloopActivity extends AppCompatActivity {
                 .setInterpolator(PathInterpolatorCompat.create(0.4f, 0.0f, 0.6f, 1f))
                 .start();
 
+        mCannotCaptureTextView.setVisibility(View.INVISIBLE);
+
         mFlagButtonIsShown = false;
     }
 
@@ -211,6 +216,8 @@ public class BloopActivity extends AppCompatActivity {
                 .setDuration(150)
                 .setInterpolator(new LinearOutSlowInInterpolator())
                 .start();
+
+        mCannotCaptureTextView.setVisibility(View.VISIBLE);
 
         mFlagButtonIsShown = true;
     }
