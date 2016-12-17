@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v4.view.animation.PathInterpolatorCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -52,6 +54,8 @@ import website.bloop.app.views.SonarView;
  * game interaction such as capturing bloops or checking the leaderboards.
  */
 public class BloopActivity extends AppCompatActivity {
+    public static final String ARG_OPPONENT = "ArgOpponentName";
+
     private static final String PREF_SOUND = "MutePREF";
     private static final String PREF_SOUND_VAL = "muted";
     private static final String TAG = "BloopActivity";
@@ -76,6 +80,9 @@ public class BloopActivity extends AppCompatActivity {
     @BindView(R.id.button_place_flag)
     FloatingActionButton mPlaceFlagButton;
     private float mPlaceFlagButtonMarginBottom; // for animation
+
+    @BindView(R.id.cannot_capture_text_view)
+    TextView mCannotCaptureTextView;
 
     @BindView(R.id.main_toolbar)
     Toolbar mToolbar;
@@ -130,8 +137,9 @@ public class BloopActivity extends AppCompatActivity {
 
         // hide flag by default
         mPlaceFlagButtonMarginBottom = getResources().getDimension(R.dimen.fab_margin);
-        // TODO: this doesn't actually animate the fab far enough
         mPlaceFlagButton.setVisibility(View.INVISIBLE);
+        // also hide text telling user to place flags
+        mCannotCaptureTextView.setVisibility(View.INVISIBLE);
 
         checkHasPlacedFlag();
 
@@ -142,11 +150,7 @@ public class BloopActivity extends AppCompatActivity {
         // init location
         mRxLocation = new RxLocation(this);
 
-        requestLocationPermissions().subscribe(granted -> {
-            if (granted) {
-                startTrackingLocation();
-            }
-        });
+        startTrackingLocation();
 
         // init blooping
         mBloopHandler = new Handler();
@@ -187,6 +191,8 @@ public class BloopActivity extends AppCompatActivity {
                 .setInterpolator(PathInterpolatorCompat.create(0.4f, 0.0f, 0.6f, 1f))
                 .start();
 
+        mCannotCaptureTextView.setVisibility(View.INVISIBLE);
+
         mFlagButtonIsShown = false;
     }
 
@@ -211,6 +217,8 @@ public class BloopActivity extends AppCompatActivity {
                 .setInterpolator(new LinearOutSlowInInterpolator())
                 .start();
 
+        mCannotCaptureTextView.setVisibility(View.VISIBLE);
+
         mFlagButtonIsShown = true;
     }
 
@@ -225,6 +233,8 @@ public class BloopActivity extends AppCompatActivity {
             );
 
             // TODO: slowly mute the boop sounds so the bloop is better
+            mBloopFrequency = 0;
+            rescheduleBloops();
 
             mService.captureFlag(flag)
                     .subscribeOn(Schedulers.newThread())
@@ -345,21 +355,27 @@ public class BloopActivity extends AppCompatActivity {
      * Main location tracking logic.
      */
     private void startTrackingLocation() {
-        Log.d(TAG, "Location tracking started");
+        requestLocationPermissions().subscribe(granted -> {
+            if (!granted) {
+                // TODO: launch dialog telling them why
+                Log.d(TAG, "Location permissions denied");
+            } else {
+                Log.d(TAG, "Location tracking started");
 
-        // Request location now that we know we have permission to do so
-        LocationRequest locationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(LOCATION_UPDATE_MS);
+                // Request location now that we know we have permission to do so
+                LocationRequest locationRequest = LocationRequest.create()
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setInterval(LOCATION_UPDATE_MS);
 
-        // this should never be called if the permission hasn't been granted.
-        //noinspection MissingPermission
-        mLocationDisposable = mRxLocation.location().updates(locationRequest)
-                .doOnEach(location -> mCurrentLocation = location.getValue())
-                .doOnEach(location -> mBootprintMapFragment.updateMapCenter(location.getValue()))
-                .doOnEach(location -> mBootprintMapFragment.updatePlayerLocation(location.getValue()))
-                .doOnEach(location -> updateBloopFrequency())
-                .subscribe();
+                //noinspection MissingPermission
+                mLocationDisposable = mRxLocation.location().updates(locationRequest)
+                        .doOnEach(location -> mCurrentLocation = location.getValue())
+                        .doOnEach(location -> mBootprintMapFragment.updateMapCenter(location.getValue()))
+                        .doOnEach(location -> mBootprintMapFragment.updatePlayerLocation(location.getValue()))
+                        .doOnEach(location -> updateBloopFrequency())
+                        .subscribe();
+            }
+        });
     }
 
     /**
@@ -388,6 +404,17 @@ public class BloopActivity extends AppCompatActivity {
                 showPlaceFlag();
             }
         }
+    }
+
+    private void opponentCapturedPlayerFlag(String opponentNameAndText) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // TODO: put this in strings file.
+        builder.setTitle(opponentNameAndText) // TODO: when Sam sends me the actual name, change this
+                .setNeutralButton("OK", (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
+                })
+                .setMessage("You have lost a point, dang.")
+                .show();
     }
 
     /**
@@ -562,5 +589,16 @@ public class BloopActivity extends AppCompatActivity {
         }
 
         checkHasPlacedFlag();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Bundle extras = intent.getExtras();
+
+        if (extras.containsKey(ARG_OPPONENT)) {
+            final String opponentName = extras.getString(ARG_OPPONENT);
+
+            opponentCapturedPlayerFlag(opponentName);
+        }
     }
 }

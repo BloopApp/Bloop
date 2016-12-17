@@ -38,6 +38,17 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
 
+    <TextView
+        android:text="Place a flag in order to capture flags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:id="@+id/cannot_capture_text_view"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textAlignment="center"
+        android:layout_below="@+id/main_toolbar"
+        android:layout_alignParentStart="true" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/button_place_flag"
         android:layout_width="wrap_content"
